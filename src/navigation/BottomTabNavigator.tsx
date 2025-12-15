@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home, List, FileText, BarChart2, MoreHorizontal } from 'lucide-react-native';
+import { colors, typography, shadows } from '@zomato/design-tokens';
 
 import DashboardScreen from '../screens/DashboardScreen';
 import { OrdersStack } from './OrdersStack';
@@ -13,58 +14,61 @@ const Tab = createBottomTabNavigator();
 export const BottomTabNavigator = () => {
     return (
         <Tab.Navigator
-            screenOptions={{
+            screenOptions={({ route }) => ({
                 headerShown: false,
-                tabBarActiveTintColor: '#E23744',
-                tabBarInactiveTintColor: '#999',
+                tabBarActiveTintColor: colors.primary.zomato_red,
+                tabBarInactiveTintColor: colors.secondary.gray_500,
                 tabBarStyle: {
-                    borderTopWidth: 1,
-                    borderTopColor: '#EEE',
+                    backgroundColor: colors.secondary.white,
+                    borderTopWidth: 0,
+                    ...shadows.lg,
                     height: 60,
                     paddingBottom: 8,
                     paddingTop: 8,
                 },
-            }}
+                tabBarLabelStyle: {
+                    ...typography.caption,
+                    fontWeight: '600',
+                },
+                tabBarIcon: ({ color, size }) => {
+                    let Icon;
+                    switch (route.name) {
+                        case 'Home': Icon = Home; break;
+                        case 'OrdersTab': Icon = List; break;
+                        case 'MenuTab': Icon = FileText; break;
+                        case 'AnalyticsTab': Icon = BarChart2; break;
+                        case 'SettingsTab': Icon = MoreHorizontal; break;
+                        default: Icon = Home;
+                    }
+                    const LucideIcon = Icon as any;
+                    return <LucideIcon size={24} color={color} />;
+                }
+            })}
         >
             <Tab.Screen
                 name="Home"
                 component={DashboardScreen}
-                options={{
-                    tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
-                    tabBarLabel: 'Home'
-                }}
+                options={{ tabBarLabel: 'Home' }}
             />
             <Tab.Screen
                 name="OrdersTab"
                 component={OrdersStack}
-                options={{
-                    tabBarIcon: ({ color, size }) => <List size={size} color={color} />,
-                    tabBarLabel: 'Orders'
-                }}
+                options={{ tabBarLabel: 'Orders' }}
             />
             <Tab.Screen
                 name="MenuTab"
                 component={MenuStack}
-                options={{
-                    tabBarIcon: ({ color, size }) => <FileText size={size} color={color} />,
-                    tabBarLabel: 'Menu'
-                }}
+                options={{ tabBarLabel: 'Menu' }}
             />
             <Tab.Screen
                 name="AnalyticsTab"
                 component={AnalyticsScreen}
-                options={{
-                    tabBarIcon: ({ color, size }) => <BarChart2 size={size} color={color} />,
-                    tabBarLabel: 'Analytics'
-                }}
+                options={{ tabBarLabel: 'Analytics' }}
             />
             <Tab.Screen
                 name="SettingsTab"
                 component={SettingsStack}
-                options={{
-                    tabBarIcon: ({ color, size }) => <MoreHorizontal size={size} color={color} />,
-                    tabBarLabel: 'More'
-                }}
+                options={{ tabBarLabel: 'More' }}
             />
         </Tab.Navigator>
     );
