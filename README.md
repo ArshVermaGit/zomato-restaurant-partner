@@ -49,9 +49,9 @@ Empowering restaurant owners and managers to handle orders, menu items, and busi
 Connect with me:
 
 - 🐙 **GitHub**: [ArshVermaGit](https://github.com/ArshVermaGit)
-- 💼 **LinkedIn**: [arshvermadev](https://www.linkedin.com/in/arshvermadev/)
+- 💼 **LinkedIn**: [ArshVermaDev](https://www.linkedin.com/in/arshvermadev/)
 - ✖️ **X (Twitter)**: [@TheArshVerma](https://x.com/TheArshVerma)
-- 📧 **Email**: [Arshvermadev@gmail.com](mailto:Arshverma.dev@gmail.com)
+- 📧 **Email**: [Arshverma.dev@gmail.com](mailto:Arshverma.dev@gmail.com)
 
 ---
 
