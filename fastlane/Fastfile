@@ -1,0 +1,43 @@
+default_platform(:ios)
+
+APP_IDENTIFIER = "com.zomato.restaurant"
+
+platform :ios do
+  desc "Build and upload to App Store Connect"
+  lane :release do
+    increment_build_number(xcodeproj: "ZomatoRestaurantPartner.xcodeproj")
+
+    build_app(
+      scheme: "ZomatoRestaurantPartner",
+      export_method: "app-store"
+    )
+
+    upload_to_app_store(
+      skip_metadata: false,
+      skip_screenshots: false
+    )
+  end
+
+  desc "Build for TestFlight"
+  lane :beta do
+    increment_build_number(xcodeproj: "ZomatoRestaurantPartner.xcodeproj")
+    build_app(scheme: "ZomatoRestaurantPartner", export_method: "app-store")
+    upload_to_testflight(skip_waiting_for_build_processing: true)
+  end
+end
+
+platform :android do
+  desc "Build and upload to Play Store"
+  lane :release do
+    gradle(task: "bundle", build_type: "Release", project_dir: "./android")
+    upload_to_play_store(
+      track: "production",
+      aab: "./android/app/build/outputs/bundle/release/app-release.aab"
+    )
+  end
+
+  lane :beta do
+    gradle(task: "bundle", build_type: "Release", project_dir: "./android")
+    upload_to_play_store(track: "internal", aab: "./android/app/build/outputs/bundle/release/app-release.aab")
+  end
+end
