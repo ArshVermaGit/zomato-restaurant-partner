@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, ScrollView, StyleSheet, RefreshControl, DrawerLayoutAndroid } from 'react-native';
+import { colors } from '@zomato/design-tokens';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { RootState } from '../store';
@@ -124,10 +125,9 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: colors.secondary.gray_50,
     },
     scrollContent: {
-        paddingBottom: 40,
     }
 });
 
