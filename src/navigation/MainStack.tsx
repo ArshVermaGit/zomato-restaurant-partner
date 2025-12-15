@@ -23,7 +23,19 @@ export const MainStack = () => {
     const currentRestaurant = useSelector((state: RootState) => state.restaurant.currentRestaurant);
 
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false,
+                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                headerStyleInterpolator: HeaderStyleInterpolators.forFade,
+                transitionSpec: {
+                    open: TransitionSpecs.TransitionIOSSpec,
+                    close: TransitionSpecs.TransitionIOSSpec,
+                },
+                gestureEnabled: true,
+                gestureDirection: 'horizontal',
+            }}
+        >
             {/* If no restaurant is selected, force selection screen */}
             {!currentRestaurant ? (
                 <Stack.Screen name="RestaurantSelection" component={RestaurantSelectionScreen} />
