@@ -4,7 +4,46 @@ import { colors, spacing } from '../../theme';
 import SettingsSection from '../../components/settings/SettingsSection';
 import MenuItem from '../../components/settings/MenuItem';
 
+import { useCreateAdHocPaymentMutation, useVerifyPaymentMutation } from '../../services/api/paymentsApi';
+import RazorpayCheckout from 'react-native-razorpay';
+import { Alert } from 'react-native';
+
 const RestaurantSettingsScreen = ({ navigation }: any) => {
+    const [initiateAdHoc, { isLoading: isPaying }] = useCreateAdHocPaymentMutation();
+    const [verifyPayment] = useVerifyPaymentMutation();
+
+    const handlePromote = async () => {
+        try {
+            const amount = 1999;
+            const paymentData = await initiateAdHoc({ amount, purpose: 'AD_BOOST' }).unwrap();
+
+            const options = {
+                description: 'Boost Visibility (7 Days)',
+                image: 'https://b.zmtcdn.com/web_assets/b40b97e677bc7b2ca77c58c61db266fe1603954218.png',
+                currency: paymentData.currency,
+                key: paymentData.key,
+                amount: paymentData.amount,
+                name: 'Zomato Ads',
+                order_id: paymentData.id,
+                theme: { color: '#E23744' }
+            };
+
+            RazorpayCheckout.open(options).then(async (data: any) => {
+                await verifyPayment({
+                    paymentId: data.razorpay_payment_id,
+                    razorpayOrderId: data.razorpay_order_id,
+                    signature: data.razorpay_signature
+                }).unwrap();
+                Alert.alert('Success', 'Promotion Activated!');
+            }).catch((err: any) => {
+                console.error(err);
+                Alert.alert('Failed', 'Payment Cancelled');
+            });
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Could not initiate promotion');
+        }
+    };
     return (
         <ScrollView style={styles.container}>
             <View style={styles.header}>
@@ -44,6 +83,15 @@ const RestaurantSettingsScreen = ({ navigation }: any) => {
                     label="Manage Staff"
                     badge="3 Active"
                     onPress={() => navigation.navigate('StaffManagement')}
+                    isLast
+                />
+            </SettingsSection>
+
+            <SettingsSection title="Promotions">
+                <MenuItem
+                    label={isPaying ? "Processing..." : "Boost Visibility"}
+                    badge="₹1999"
+                    onPress={handlePromote}
                     isLast
                 />
             </SettingsSection>
