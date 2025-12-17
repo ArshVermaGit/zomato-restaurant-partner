@@ -18,6 +18,7 @@ const TransactionsScreen = () => {
         dispatch(setLoading(true));
         try {
             const data = await RestaurantService.getTransactions('REST-001');
+            // @ts-ignore
             dispatch(setTransactions(data));
         } catch (error) {
             console.error(error);
