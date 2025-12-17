@@ -17,7 +17,9 @@ export interface Transaction {
     commission: number;
     tax: number;
     netAmount: number;
-    status: 'PAID' | 'PENDING' | 'REFUNDED';
+    status: 'COMPLETED' | 'PENDING' | 'FAILED';
+    description: string;
+    type: 'CREDIT' | 'DEBIT';
 }
 
 export interface Payout {
@@ -32,6 +34,12 @@ interface FinancialsState {
     overview: FinancialOverview | null;
     transactions: Transaction[];
     payouts: Payout[];
+    bankAccount: {
+        bankName: string;
+        accountNumber: string;
+        ifsc: string;
+        isVerified: boolean;
+    } | null;
     loading: boolean;
     error: string | null;
 }
@@ -40,6 +48,7 @@ const initialState: FinancialsState = {
     overview: null,
     transactions: [],
     payouts: [],
+    bankAccount: null,
     loading: false,
     error: null,
 };
@@ -57,6 +66,9 @@ const financialsSlice = createSlice({
         setPayouts: (state, action: PayloadAction<Payout[]>) => {
             state.payouts = action.payload;
         },
+        setBankAccount: (state, action: PayloadAction<FinancialsState['bankAccount']>) => {
+            state.bankAccount = action.payload;
+        },
         setLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;
         },
@@ -67,7 +79,7 @@ const financialsSlice = createSlice({
 });
 
 export const {
-    setFinancialsOverview, setTransactions, setPayouts,
+    setFinancialsOverview, setTransactions, setPayouts, setBankAccount,
     setLoading, setError
 } = financialsSlice.actions;
 
