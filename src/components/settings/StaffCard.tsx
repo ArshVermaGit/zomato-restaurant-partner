@@ -1,69 +1,103 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { colors, typography, spacing, borderRadius } from '../../theme';
+import { Edit2, Trash2 } from 'lucide-react-native';
 import { StaffMember } from '../../store/slices/staffSlice';
-import { User, Trash2 } from 'lucide-react-native';
 
 interface Props {
     staff: StaffMember;
-    onDelete: (id: string) => void;
+    onEdit?: () => void;
+    onDelete?: (id: string) => void;
 }
 
-const StaffCard: React.FC<Props> = ({ staff, onDelete }) => {
+const StaffCard: React.FC<Props> = ({ staff, onEdit, onDelete }) => {
     return (
-        <View style={styles.container}>
-            <View style={styles.left}>
-                <View style={styles.avatar}>
-                    <User size={20} color="#666" />
-                </View>
-                <View>
+        <View style={styles.card}>
+            <View style={styles.info}>
+                <View style={styles.header}>
                     <Text style={styles.name}>{staff.name}</Text>
-                    <Text style={styles.role}>{staff.role}</Text>
+                    <View style={[styles.badge, staff.active ? styles.activeBadge : styles.inactiveBadge]}>
+                        <Text style={[styles.badgeText, staff.active ? styles.activeText : styles.inactiveText]}>
+                            {staff.active ? 'ACTIVE' : 'INACTIVE'}
+                        </Text>
+                    </View>
                 </View>
+                <Text style={styles.role}>{staff.role}</Text>
             </View>
 
-            <TouchableOpacity style={styles.deleteBtn} onPress={() => onDelete(staff.id)}>
-                <Trash2 size={18} color="#D32F2F" />
-            </TouchableOpacity>
+            <View style={styles.actions}>
+                {onEdit && (
+                    <TouchableOpacity onPress={onEdit} style={styles.actionBtn}>
+                        <Edit2 size={18} color={colors.gray_600} />
+                    </TouchableOpacity>
+                )}
+                {onDelete && (
+                    <TouchableOpacity onPress={() => onDelete(staff.id)} style={styles.actionBtn}>
+                        <Trash2 size={18} color={colors.zomato_red} />
+                    </TouchableOpacity>
+                )}
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    card: {
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#FFF',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
+        alignItems: 'center',
+        padding: spacing.md,
+        backgroundColor: colors.white,
+        borderRadius: borderRadius.md,
+        marginBottom: spacing.sm,
         borderWidth: 1,
-        borderColor: '#EEE',
+        borderColor: colors.gray_100,
     },
-    left: {
+    info: {
+        flex: 1,
+    },
+    header: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-    },
-    avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#F5F5F5',
-        justifyContent: 'center',
-        alignItems: 'center',
+        gap: spacing.sm,
+        marginBottom: 4,
     },
     name: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
+        ...typography.body_large,
+        fontWeight: '600',
+        color: colors.gray_900,
     },
     role: {
-        fontSize: 12,
-        color: '#666',
+        ...typography.caption,
+        color: colors.gray_500,
     },
-    deleteBtn: {
-        padding: 8,
+    badge: {
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+    },
+    activeBadge: {
+        backgroundColor: colors.semantic.success_light,
+    },
+    inactiveBadge: {
+        backgroundColor: colors.gray_200,
+    },
+    badgeText: {
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    activeText: {
+        color: colors.success,
+    },
+    inactiveText: {
+        color: colors.gray_600,
+    },
+    actions: {
+        flexDirection: 'row',
+        gap: spacing.md,
+    },
+    actionBtn: {
+        padding: 4,
     }
 });
 
