@@ -1,11 +1,15 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, ScrollView, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, FlatList, ActivityIndicator, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { setReviewsData, respondToReview, setLoading, setFilter } from '../../store/slices/reviewsSlice';
+import { setReviewsData, respondToReview, setLoading, setFilter, Review } from '../../store/slices/reviewsSlice';
 import { RestaurantService } from '../../services/api/restaurant';
-import RatingSummary from '../../components/reviews/RatingSummary';
+import { colors, spacing } from '../../theme';
+
+import RatingOverviewCard from '../../components/reviews/RatingOverviewCard';
+import FilterChips from '../../components/reviews/FilterChips';
 import ReviewCard from '../../components/reviews/ReviewCard';
+import RespondToReviewModal from '../../components/reviews/RespondToReviewModal';
 
 const FILTERS = [
     { id: 'ALL', label: 'All Reviews' },
@@ -20,6 +24,10 @@ const FILTERS = [
 const ReviewsScreen = () => {
     const dispatch = useDispatch();
     const { filteredReviews, stats, filter, loading } = useSelector((state: RootState) => state.reviews);
+
+    // Response Modal State
+    const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+    const [isResponseModalVisible, setIsResponseModalVisible] = useState(false);
 
     useEffect(() => {
         loadReviews();
@@ -37,9 +45,16 @@ const ReviewsScreen = () => {
         }
     };
 
-    const handleReply = async (id: string, text: string) => {
-        dispatch(respondToReview({ id, response: text }));
-        await RestaurantService.respondToReview(id, text);
+    const handleOpenResponse = (review: Review) => {
+        setSelectedReview(review);
+        setIsResponseModalVisible(true);
+    };
+
+    const handleSubmitResponse = async (text: string) => {
+        if (selectedReview) {
+            dispatch(respondToReview({ id: selectedReview.id, response: text }));
+            await RestaurantService.respondToReview(selectedReview.id, text);
+        }
     };
 
     return (
@@ -50,7 +65,7 @@ const ReviewsScreen = () => {
 
             {loading ? (
                 <View style={styles.loader}>
-                    <ActivityIndicator size="large" color="#E23744" />
+                    <ActivityIndicator size="large" color={colors.zomato_red} />
                 </View>
             ) : (
                 <FlatList
@@ -58,32 +73,31 @@ const ReviewsScreen = () => {
                     keyExtractor={item => item.id}
                     ListHeaderComponent={
                         <View>
-                            <RatingSummary
-                                average={stats.average}
-                                totalCount={stats.totalCount}
+                            <RatingOverviewCard
+                                rating={stats.average}
+                                totalReviews={stats.totalCount}
                                 distribution={stats.distribution}
                             />
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
-                                {FILTERS.map(f => (
-                                    <TouchableOpacity
-                                        key={f.id}
-                                        style={[styles.chip, filter === f.id && styles.activeChip]}
-                                        onPress={() => dispatch(setFilter(f.id as any))}
-                                    >
-                                        <Text style={[styles.chipText, filter === f.id && styles.activeChipText]}>
-                                            {f.label}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </ScrollView>
+                            <FilterChips
+                                options={FILTERS}
+                                selected={filter}
+                                onSelect={(id) => dispatch(setFilter(id as any))}
+                            />
                         </View>
                     }
                     renderItem={({ item }) => (
-                        <ReviewCard review={item} onReply={handleReply} />
+                        <ReviewCard review={item} onRespond={handleOpenResponse} />
                     )}
                     contentContainerStyle={styles.list}
                 />
             )}
+
+            <RespondToReviewModal
+                visible={isResponseModalVisible}
+                review={selectedReview}
+                onClose={() => setIsResponseModalVisible(false)}
+                onSubmit={handleSubmitResponse}
+            />
         </View>
     );
 };
@@ -94,16 +108,16 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F9FA',
     },
     header: {
-        padding: 16,
+        padding: spacing.md,
         paddingTop: 50,
-        backgroundColor: '#FFF',
+        backgroundColor: colors.white,
         borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        borderBottomColor: colors.gray_100,
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#1C1C1C',
+        color: colors.gray_900,
     },
     loader: {
         flex: 1,
@@ -111,32 +125,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     list: {
-        padding: 16,
+        padding: spacing.md,
     },
-    filterRow: {
-        marginBottom: 16,
-    },
-    chip: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        backgroundColor: '#FFF',
-        borderRadius: 20,
-        marginRight: 8,
-        borderWidth: 1,
-        borderColor: '#DDD',
-    },
-    activeChip: {
-        backgroundColor: '#1C1C1C',
-        borderColor: '#1C1C1C',
-    },
-    chipText: {
-        color: '#666',
-        fontWeight: '600',
-        fontSize: 12,
-    },
-    activeChipText: {
-        color: '#FFF',
-    }
 });
 
 export default ReviewsScreen;
