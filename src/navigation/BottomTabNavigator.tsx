@@ -1,7 +1,10 @@
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, List, FileText, BarChart2, MoreHorizontal } from 'lucide-react-native';
+import { Home, ShoppingBag, FileText, BarChart2, MoreHorizontal } from 'lucide-react-native';
 import { colors, typography, shadows } from '@zomato/design-tokens';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 
 import DashboardScreen from '../screens/DashboardScreen';
 import { OrdersStack } from './OrdersStack';
@@ -12,6 +15,10 @@ import { SettingsStack } from './SettingsStack';
 const Tab = createBottomTabNavigator();
 
 export const BottomTabNavigator = () => {
+    // Calculate pending orders count
+    const orders = useSelector((state: RootState) => state.orders.orders);
+    const pendingCount = Object.values(orders).filter(o => o.status === 'PENDING').length;
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -21,27 +28,33 @@ export const BottomTabNavigator = () => {
                 tabBarStyle: {
                     backgroundColor: colors.secondary.white,
                     borderTopWidth: 0,
+                    height: 70,
+                    paddingTop: 10,
+                    paddingBottom: 10,
                     ...shadows.lg,
-                    height: 60,
-                    paddingBottom: 8,
-                    paddingTop: 8,
                 },
                 tabBarLabelStyle: {
                     ...typography.caption,
+                    fontSize: 10,
+                    marginBottom: 5,
                     fontWeight: '600',
                 },
-                tabBarIcon: ({ color, size }) => {
+                tabBarIcon: ({ color, focused }) => {
                     let Icon;
                     switch (route.name) {
                         case 'Home': Icon = Home; break;
-                        case 'OrdersTab': Icon = List; break;
+                        case 'OrdersTab': Icon = ShoppingBag; break;
                         case 'MenuTab': Icon = FileText; break;
                         case 'AnalyticsTab': Icon = BarChart2; break;
                         case 'SettingsTab': Icon = MoreHorizontal; break;
                         default: Icon = Home;
                     }
                     const LucideIcon = Icon as any;
-                    return <LucideIcon size={24} color={color} />;
+                    return (
+                        <View style={[styles.tabIcon, focused && styles.tabIconActive]}>
+                            <LucideIcon size={24} color={color} />
+                        </View>
+                    );
                 }
             })}
         >
@@ -53,7 +66,11 @@ export const BottomTabNavigator = () => {
             <Tab.Screen
                 name="OrdersTab"
                 component={OrdersStack}
-                options={{ tabBarLabel: 'Orders' }}
+                options={{
+                    tabBarLabel: 'Orders',
+                    tabBarBadge: pendingCount > 0 ? pendingCount : undefined,
+                    tabBarBadgeStyle: { backgroundColor: colors.primary.zomato_red, color: 'white' }
+                }}
             />
             <Tab.Screen
                 name="MenuTab"
@@ -73,3 +90,13 @@ export const BottomTabNavigator = () => {
         </Tab.Navigator>
     );
 };
+
+const styles = StyleSheet.create({
+    tabIcon: {
+        padding: 5,
+        borderRadius: 20,
+    },
+    tabIconActive: {
+        backgroundColor: colors.primary.zomato_red_light + '20', // Add 20% opacity
+    }
+});
