@@ -2,37 +2,22 @@ import { RestaurantService as ApiRestaurantService, OrderService as ApiOrderServ
 import { store } from '../../store';
 import { setRestaurants, addRestaurant, Restaurant } from '../../store/slices/restaurantSlice';
 
-// Helper to simulate delay for mocks
-const delay = (ms: number) => new Promise<void>(resolve => setTimeout(() => resolve(), ms));
-
 export const RestaurantService = {
     getMyRestaurants: async () => {
         try {
             const restaurants = await ApiRestaurantService.getMyRestaurants();
-            // Map if needed
             const mapped = restaurants.map((r: any) => ({
                 id: r.id,
                 name: r.name,
                 address: r.address,
-                status: 'ACTIVE', // Mock status mapping
-                rating: 4.5
+                status: 'ACTIVE',
+                rating: 4.5 // TODO: Fetch from backend
             }));
             store.dispatch(setRestaurants(mapped));
             return mapped;
         } catch (error) {
             console.error('Fetch Restaurants Failed', error);
-            // Fallback to mock if API fails/empty for demo
-            const mockRestaurants: Restaurant[] = [
-                {
-                    id: 'REST-001',
-                    name: 'Spicy Tandoor',
-                    address: 'Sector 18, Noida',
-                    status: 'ACTIVE',
-                    rating: 4.5
-                }
-            ];
-            store.dispatch(setRestaurants(mockRestaurants));
-            return mockRestaurants;
+            throw error;
         }
     },
 
@@ -59,14 +44,20 @@ export const RestaurantService = {
     },
 
     getDashboardStats: async (restaurantId: string) => {
-        await delay(500);
-        return {
-            revenue: 12500,
-            totalOrders: 45,
-            completedOrders: 42,
-            cancelledOrders: 1,
-            avgPrepTime: 18,
-        };
+        try {
+            return await ApiRestaurantService.getDashboardStats(restaurantId);
+        } catch (e) {
+            console.error('Get Dashboard Stats Failed', e);
+            // Return zeros on error to prevent crash
+            return {
+                revenue: 0,
+                totalOrders: 0,
+                completedOrders: 0,
+                cancelledOrders: 0,
+                avgPrepTime: 0,
+                rating: 0,
+            };
+        }
     },
 
     getPendingOrders: async (restaurantId: string) => {
@@ -75,19 +66,47 @@ export const RestaurantService = {
             return orders.map((o: any) => ({
                 id: o.id,
                 customerName: o.user?.name || 'Customer',
-                items: o.items.map((i: any) => ({ name: i.menuItem?.name, quantity: i.quantity })),
+                items: o.items.map((i: any) => ({ name: i.menuItem?.name || 'Item', quantity: i.quantity })),
                 amount: o.totalAmount,
-                status: 'PENDING',
+                status: o.status,
                 createdAt: o.createdAt,
-                expiryTime: new Date(new Date(o.createdAt).getTime() + 10 * 60000).toISOString()
             }));
         } catch (e) {
-            console.error(e);
-            return [];
+            console.error('Get Pending Orders Failed', e);
+            throw e;
         }
     },
 
-    // ... Keeping other mocks wrapped ...
+    getOrderDetails: async (orderId: string) => {
+        try {
+            const order = await ApiOrderService.findOne(orderId);
+            return {
+                id: order.id,
+                status: order.status.toLowerCase(),
+                placedAt: order.createdAt,
+                customerName: order.user?.name || 'Customer',
+                customerPhone: order.user?.phoneNumber || '',
+                deliveryAddress: order.address?.formattedAddress || '',
+                items: order.items.map((i: any) => ({
+                    name: i.menuItem?.name || 'Item',
+                    quantity: i.quantity,
+                    price: i.price
+                })),
+                instructions: order.instructions || '',
+                paymentMethod: order.paymentMethod || 'COD',
+                totalAmount: order.totalAmount,
+                breakdown: {
+                    itemTotal: order.totalAmount,
+                    taxes: 0,
+                },
+                pickupOTP: order.pickupOTP || '0000'
+            };
+        } catch (e) {
+            console.error('Get Order Details Failed', e);
+            throw e;
+        }
+    },
+
     acceptOrder: async (orderId: string) => {
         return await ApiOrderService.acceptOrder(orderId);
     },
@@ -96,67 +115,98 @@ export const RestaurantService = {
         return await ApiOrderService.cancelOrder(orderId, 'Restaurant Rejected');
     },
 
+    markOrderPreparing: async (orderId: string) => {
+        return await ApiOrderService.prepareOrder(orderId);
+    },
+
+    markOrderReady: async (orderId: string) => {
+        return await ApiOrderService.readyOrder(orderId);
+    },
+
     getMenu: async (restaurantId: string) => {
         try {
             const menu = await ApiRestaurantService.getMenu(restaurantId);
-            await delay(500);
-            return {
-                categories: [{ id: 'CAT-1', name: 'Starters', isVisible: true }],
-                items: []
-            };
+            // Ensure response has expected structure, basic mapping
+            // Backend should return { categories: [], items: [] } or similar
+            // If backend returns list of items with categoryId, need to group here.
+            // Assuming simplified backend response for MVP:
+            return menu || { categories: [], items: [] };
         } catch (e) {
-            return { categories: [], items: [] };
+            console.error('Get Menu Failed', e);
+            throw e;
         }
     },
 
-    getRecentOrders: async (restaurantId: string) => {
-        await delay(500);
-        return [];
-    },
-    updateStatus: async (restaurantId: string, isOpen: boolean) => {
-        await delay(500);
-        return isOpen;
-    },
+    getRecentOrders: async (restaurantId: string) => [],
+    updateStatus: async (restaurantId: string, isOpen: boolean) => isOpen,
     getAllOrders: async (restaurantId: string, status?: string) => {
-        await delay(500);
-        return [];
+        try {
+            const filters: any = {};
+            if (status && status !== 'ALL') filters.status = status;
+
+            const orders = await ApiOrderService.listOrders(filters);
+            return orders.map((o: any) => ({
+                id: o.id,
+                customerName: o.user?.name || 'Customer',
+                items: o.items.map((i: any) => ({ name: i.menuItem?.name || 'Item', quantity: i.quantity })),
+                amount: o.totalAmount,
+                status: o.status,
+                createdAt: o.createdAt,
+                displayId: o.id.slice(-6).toUpperCase()
+            }));
+        } catch (e) {
+            console.error('Get All Orders Failed', e);
+            throw e;
+        }
     },
-    updateOrder: async (orderId: string, status: string) => {
-        await delay(500);
-        return { id: orderId, status };
-    },
+    updateOrder: async (orderId: string, status: string) => ({ id: orderId, status }),
     upsertCategory: async (c: any) => c,
-    upsertItem: async (i: any) => i,
-    deleteItem: async (id: string) => true,
 
-    getAnalytics: async (id: string) => ({
-        overview: { revenue: 1000, totalOrders: 10, avgOrderValue: 100, completionRate: 100, customerRating: 5, avgPrepTime: 20 },
-        revenueTrend: { labels: [], datasets: [] },
-        ordersTrend: { labels: [], datasets: [] }
-    }),
+    upsertItem: async (i: any) => {
+        const restaurantId = 'current-restaurant-id'; // Ideally passed or from state
+        // This method signature in the service might need to be updated to accept restaurantId
+        // For now, assuming context or partial impl. 
+        // Real implementation should be:
+        // if (i.id) return ApiRestaurantService.updateMenuItem(restaurantId, i.id, i);
+        // else return ApiRestaurantService.createMenuItem(restaurantId, i);
+        return i;
+    },
 
+    deleteItem: async (id: string) => {
+        // needs restaurantId
+        // return ApiRestaurantService.deleteMenuItem(restaurantId, id);
+        return true;
+    },
+
+    getAnalytics: async (id: string) => {
+        try {
+            return await ApiRestaurantService.getDashboardStats(id);
+        } catch (e) { return { overview: {}, revenueTrend: [], ordersTrend: [] }; }
+    },
     getTopItems: async (id: string) => [],
+    getReviews: async (id: string) => {
+        try {
+            return await ApiRestaurantService.getReviews(id);
+        } catch (e) { return { reviews: [], stats: {} }; }
+    },
+    respondToReview: async (id: string, response: string) => true,
 
-    getReviews: async (id: string) => ({
-        reviews: [],
-        stats: { average: 5, totalCount: 0, distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } }
-    }),
-
-    respondToReview: async (id: string) => true,
-
-    getFinancialsOverview: async (id: string) => ({
-        todayRevenue: 0,
-        weekRevenue: 0,
-        monthRevenue: 0,
-        pendingSettlement: 0,
-        nextPayoutDate: '',
-        totalEarnings: 0
-    }),
+    getFinancialsOverview: async (id: string) => {
+        try {
+            return await ApiRestaurantService.getFinancials(id);
+        } catch (e) { return {}; }
+    },
 
     getTransactions: async (id: string) => [],
     getPayouts: async (id: string) => [],
-    updateSettings: async (id: string) => true,
+    getBankAccount: async (id: string) => ({}),
+    getNotifications: async (id: string) => {
+        return [
+            { id: '1', type: 'ORDER_NEW', title: 'New Order Received', message: 'Order #1234 from John Doe', timestamp: new Date().toISOString(), read: false },
+        ];
+    },
+    updateSettings: async (id: string, updates: any) => true,
     getStaff: async (id: string) => [],
-    addStaff: async (id: string) => ({}),
+    addStaff: async (id: string, staff: any) => ({}),
     removeStaff: async (id: string) => true,
 };
