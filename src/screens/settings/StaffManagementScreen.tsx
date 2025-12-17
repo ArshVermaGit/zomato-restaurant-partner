@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TextInput, Alert, ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert, SafeAreaView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { setStaff, addStaffMember, removeStaffMember, setLoading } from '../../store/slices/staffSlice';
+import { setStaff, removeStaffMember, setLoading } from '../../store/slices/staffSlice';
 import { RestaurantService } from '../../services/api/restaurant';
 import StaffCard from '../../components/settings/StaffCard';
-import { Plus, X } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
+import { colors, spacing, borderRadius } from '../../theme';
 
-const StaffManagementScreen = () => {
+const StaffManagementScreen = ({ navigation }: any) => {
     const dispatch = useDispatch();
     const { members, loading } = useSelector((state: RootState) => state.staff);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [newName, setNewName] = useState('');
-    const [newRole, setNewRole] = useState('Cashier');
 
     useEffect(() => {
         loadData();
@@ -31,21 +29,6 @@ const StaffManagementScreen = () => {
         }
     };
 
-    const handleAdd = async () => {
-        if (!newName.trim()) return;
-        const newStaff = {
-            name: newName,
-            role: newRole,
-            phone: '9999999999',
-            email: 'new@staff.com'
-        };
-        const added = await RestaurantService.addStaff('REST-001', newStaff);
-        // @ts-ignore
-        dispatch(addStaffMember(added));
-        setModalVisible(false);
-        setNewName('');
-    };
-
     const handleDelete = async (id: string) => {
         Alert.alert('Confirm Delete', 'Remove this staff member?', [
             { text: 'Cancel' },
@@ -62,59 +45,36 @@ const StaffManagementScreen = () => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Staff Management</Text>
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <Plus size={24} color="#E23744" />
-                </TouchableOpacity>
             </View>
 
             {loading ? (
-                <ActivityIndicator style={{ marginTop: 20 }} size="large" color="#E23744" />
+                <View style={styles.loader}>
+                    <ActivityIndicator size="large" color={colors.zomato_red} />
+                </View>
             ) : (
                 <FlatList
                     data={members}
                     keyExtractor={item => item.id}
-                    renderItem={({ item }) => <StaffCard staff={item} onDelete={handleDelete} />}
+                    renderItem={({ item }) => (
+                        <StaffCard
+                            staff={item}
+                            onEdit={() => Alert.alert('Edit', 'Edit functionality not implemented yet')}
+                            onDelete={handleDelete}
+                        />
+                    )}
                     contentContainerStyle={styles.list}
+                    ListEmptyComponent={<Text style={styles.empty}>No staff members found.</Text>}
                 />
             )}
 
-            <Modal visible={modalVisible} animationType="slide" transparent>
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Add New Staff</Text>
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <X size={24} color="#333" />
-                            </TouchableOpacity>
-                        </View>
-
-                        <Text style={styles.label}>Name</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={newName}
-                            onChangeText={setNewName}
-                            placeholder="Full Name"
-                        />
-
-                        <Text style={styles.label}>Role</Text>
-                        <View style={styles.roleRow}>
-                            {['Manager', 'Chef', 'Cashier'].map(r => (
-                                <TouchableOpacity
-                                    key={r}
-                                    style={[styles.roleChip, newRole === r && styles.roleActive]}
-                                    onPress={() => setNewRole(r)}
-                                >
-                                    <Text style={[styles.roleText, newRole === r && styles.roleTextActive]}>{r}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-
-                        <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
-                            <Text style={styles.addBtnText}>Add Staff</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+            <TouchableOpacity
+                style={styles.fab}
+                onPress={() => navigation.navigate('AddStaff')}
+                activeOpacity={0.8}
+            >
+                <Plus size={24} color={colors.white} />
+                <Text style={styles.fabText}>Add Staff</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -122,89 +82,53 @@ const StaffManagementScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: colors.gray_50,
     },
     header: {
-        padding: 16,
+        padding: spacing.md,
         paddingTop: 50,
-        backgroundColor: '#FFF',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        backgroundColor: colors.white,
         borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        borderBottomColor: colors.gray_100,
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: colors.gray_900,
+    },
+    loader: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     list: {
-        padding: 16,
+        padding: spacing.md,
+        paddingBottom: 100,
     },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'flex-end',
+    empty: {
+        textAlign: 'center',
+        color: colors.gray_500,
+        marginTop: spacing.xl,
     },
-    modalContent: {
-        backgroundColor: '#FFF',
-        padding: 20,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-    },
-    modalHeader: {
+    fab: {
+        position: 'absolute',
+        bottom: spacing.xl,
+        right: spacing.md,
+        backgroundColor: colors.zomato_red,
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
+        paddingHorizontal: spacing.lg,
+        paddingVertical: spacing.md,
+        borderRadius: 25,
+        elevation: 5,
+        shadowColor: colors.zomato_red,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        gap: 8,
     },
-    modalTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        color: '#666',
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#DDD',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 20,
-    },
-    roleRow: {
-        flexDirection: 'row',
-        gap: 10,
-        marginBottom: 24,
-    },
-    roleChip: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20,
-        backgroundColor: '#F0F0F0',
-    },
-    roleActive: {
-        backgroundColor: '#E23744',
-    },
-    roleText: {
-        color: '#666',
-        fontWeight: '600',
-    },
-    roleTextActive: {
-        color: '#FFF',
-    },
-    addBtn: {
-        backgroundColor: '#1C1C1C',
-        padding: 16,
-        borderRadius: 12,
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    addBtnText: {
-        color: '#FFF',
+    fabText: {
+        color: colors.white,
         fontWeight: 'bold',
         fontSize: 16,
     }
