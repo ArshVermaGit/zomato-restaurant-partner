@@ -71,13 +71,29 @@ const menuSlice = createSlice({
         },
         setLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;
+        },
+        setCategories: (state, action: PayloadAction<MenuCategory[]>) => {
+            state.categories = action.payload;
+        },
+        bulkUpdateAvailability: (state, action: PayloadAction<{ ids: string[]; isAvailable: boolean }>) => {
+            action.payload.ids.forEach(id => {
+                if (state.items[id]) {
+                    state.items[id].isAvailable = action.payload.isAvailable;
+                }
+            });
+        },
+        bulkDeleteItems: (state, action: PayloadAction<string[]>) => {
+            action.payload.forEach(id => {
+                delete state.items[id];
+            });
         }
     },
 });
 
 export const {
     setMenuData, addCategory, updateCategory, deleteCategory,
-    addItem, updateItem, toggleItemAvailability, deleteItem, setLoading
+    addItem, updateItem, toggleItemAvailability, deleteItem, setLoading, setCategories,
+    bulkUpdateAvailability, bulkDeleteItems
 } = menuSlice.actions;
 
 export default menuSlice.reducer;
