@@ -22,7 +22,7 @@ export const useOrderNotifications = () => {
 
         // Initialize sound
         Sound.setCategory('Playback');
-        const orderAlert = new Sound('order_alert.mp3', Sound.MAIN_BUNDLE, (error) => {
+        const orderAlert = new Sound('order_alert.mp3', Sound.MAIN_BUNDLE, (error: any) => {
             if (error) {
                 console.log('failed to load the sound', error);
                 return;
@@ -33,11 +33,11 @@ export const useOrderNotifications = () => {
             console.log('Connected to WebSocket server');
         });
 
-        socket.on('new_order', (order: Order) => {
+        socket.on('new_order', (order: Order & { displayId?: string }) => {
             console.log('New Order Received:', order.id);
 
             // Play sound
-            orderAlert.play((success) => {
+            orderAlert.play((success: boolean) => {
                 if (!success) {
                     console.log('playback failed due to audio decoding errors');
                 }
