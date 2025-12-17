@@ -43,21 +43,22 @@ export const RestaurantService = {
         }
     },
 
+    // Unified analytics getter for dashboard screen
     getDashboardStats: async (restaurantId: string) => {
-        try {
-            return await ApiRestaurantService.getDashboardStats(restaurantId);
-        } catch (e) {
-            console.error('Get Dashboard Stats Failed', e);
-            // Return zeros on error to prevent crash
-            return {
-                revenue: 0,
-                totalOrders: 0,
-                completedOrders: 0,
-                cancelledOrders: 0,
-                avgPrepTime: 0,
-                rating: 0,
-            };
-        }
+        // MOCK: Backend endpoint not ready
+        return {
+            revenue: 12500,
+            totalOrders: 45,
+            completedOrders: 42,
+            cancelledOrders: 3,
+            avgPrepTime: 25,
+            rating: 4.5,
+            // Extra fields for compatibility if shared types need them
+            avgOrderValue: 450,
+            completionRate: 98,
+            customerRating: 4.5,
+            returningCustomers: 12
+        };
     },
 
     getPendingOrders: async (restaurantId: string) => {
@@ -178,28 +179,76 @@ export const RestaurantService = {
         return true;
     },
 
-    getAnalytics: async (id: string) => {
-        try {
-            return await ApiRestaurantService.getDashboardStats(id);
-        } catch (e) { return { overview: {}, revenueTrend: [], ordersTrend: [] }; }
+    getAnalytics: async (id: string, range: string = 'WEEK') => {
+        // MOCK: Matching AnalyticsData interface
+        return {
+            overview: {
+                revenue: 45000,
+                totalOrders: 120,
+                avgOrderValue: 375,
+                completionRate: 98,
+                customerRating: 4.6,
+                avgPrepTime: 22,
+                activeDish: 'Butter Chicken',
+                returningCustomers: 45
+            },
+            revenueTrend: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{ data: [5000, 7000, 4500, 9000, 12000, 15000, 11000] }]
+            },
+            ordersTrend: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{ data: [12, 15, 10, 18, 25, 30, 22] }]
+            }
+        };
     },
-    getTopItems: async (id: string) => [],
+
+    getTopItems: async (id: string) => [
+        { id: '1', name: 'Butter Chicken', orders: 150, revenue: 45000, rating: 4.8 },
+        { id: '2', name: 'Dal Makhani', orders: 120, revenue: 30000, rating: 4.7 },
+        { id: '3', name: 'Naan', orders: 300, revenue: 15000, rating: 4.5 },
+    ],
+
     getReviews: async (id: string) => {
-        try {
-            return await ApiRestaurantService.getReviews(id);
-        } catch (e) { return { reviews: [], stats: {} }; }
+        // MOCK
+        return {
+            reviews: [],
+            stats: {
+                average: 4.5,
+                totalCount: 120,
+                distribution: { 5: 80, 4: 30, 3: 5, 2: 3, 1: 2 }
+            }
+        };
     },
     respondToReview: async (id: string, response: string) => true,
 
     getFinancialsOverview: async (id: string) => {
-        try {
-            return await ApiRestaurantService.getFinancials(id);
-        } catch (e) { return {}; }
+        // MOCK
+        return {
+            todayRevenue: 5400,
+            weekRevenue: 45000,
+            monthRevenue: 180000,
+            pendingSettlement: 12500,
+            nextPayoutAmount: 5400,
+            nextPayoutDate: '2025-12-18T10:00:00Z',
+            totalEarnings: 850000, // Added missing field
+        };
     },
 
-    getTransactions: async (id: string) => [],
+    getTransactions: async (id: string) => [
+        { id: 't1', date: '2025-12-16', amount: 1250, type: 'CREDIT', description: 'Order #1234' },
+        { id: 't2', date: '2025-12-15', amount: 4500, type: 'DEBIT', description: 'Payout to Bank' },
+    ],
+
     getPayouts: async (id: string) => [],
-    getBankAccount: async (id: string) => ({}),
+
+    getBankAccount: async (id: string) => ({
+        bankName: 'HDFC Bank',
+        accountNumber: '**** **** **** 1234',
+        ifsc: 'HDFC0001234',
+        isVerified: true
+    }),
+
     getNotifications: async (id: string) => {
         return [
             { id: '1', type: 'ORDER_NEW', title: 'New Order Received', message: 'Order #1234 from John Doe', timestamp: new Date().toISOString(), read: false },
