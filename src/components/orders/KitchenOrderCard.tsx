@@ -41,56 +41,71 @@ const KitchenOrderCard: React.FC<Props> = ({ order, onReady }) => {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#FFF',
-        borderRadius: 8,
+        backgroundColor: '#333', // Dark card
+        borderRadius: 12,
         borderWidth: 2,
         overflow: 'hidden',
-        minHeight: 200,
-        elevation: 3,
+        minHeight: 240,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         padding: 12,
+        paddingHorizontal: 16,
     },
     headerText: {
         color: '#FFF',
-        fontWeight: 'bold',
-        fontSize: 18,
+        fontWeight: '800',
+        fontSize: 20,
+        letterSpacing: 0.5,
     },
     content: {
-        padding: 12,
+        padding: 16,
         flex: 1,
     },
     items: {
-        gap: 8,
+        gap: 12,
     },
     itemRow: {
         flexDirection: 'row',
-        gap: 12,
+        alignItems: 'flex-start',
+        gap: 14,
     },
     qty: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#1C1C1C',
-        width: 24,
+        fontSize: 20,
+        fontWeight: '800',
+        color: '#FFF',
+        width: 32,
+        textAlign: 'center',
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        borderRadius: 6,
+        overflow: 'hidden',
     },
     itemName: {
-        fontSize: 18,
-        color: '#333',
+        fontSize: 17,
+        fontWeight: '500',
+        color: '#E0E0E0',
         flex: 1,
+        lineHeight: 24,
     },
     btn: {
-        backgroundColor: '#F0F0F0',
+        backgroundColor: '#444',
         padding: 16,
         alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#EEE',
+        borderTopColor: '#555',
     },
     btnText: {
-        fontWeight: 'bold',
-        color: '#333',
-        fontSize: 14,
+        fontWeight: '700',
+        color: '#FFF', // Default, will be overridden by header color usually if matched
+        fontSize: 16,
+        letterSpacing: 1,
     }
 });
 
