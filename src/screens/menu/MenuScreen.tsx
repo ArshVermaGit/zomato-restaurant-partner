@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Text, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { setMenuData, toggleItemAvailability, deleteItem } from '../../store/slices/menuSlice';
+import { setMenuData, toggleItemAvailability, deleteItem, setCategories } from '../../store/slices/menuSlice';
 import { RestaurantService } from '../../services/api/restaurant';
 import MenuCategory from '../../components/menu/MenuCategory';
 import MenuItemCard from '../../components/menu/MenuItemCard';
-import { Plus } from 'lucide-react-native';
+import ReorderCategoryList from '../../components/menu/ReorderCategoryList';
+import { Plus, ArrowUpDown, Check, CheckSquare } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { colors, spacing } from '../../theme';
 
 const MenuScreen = () => {
     const dispatch = useDispatch();
@@ -15,9 +17,19 @@ const MenuScreen = () => {
     const { categories, items, loading } = useSelector((state: RootState) => state.menu);
     const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
+    // Reorder Mode
+    const [isReordering, setIsReordering] = useState(false);
+    const [tempCategories, setTempCategories] = useState(categories);
+
     useEffect(() => {
         loadMenu();
     }, []);
+
+    useEffect(() => {
+        if (isReordering) {
+            setTempCategories(categories);
+        }
+    }, [isReordering, categories]);
 
     const loadMenu = async () => {
         try {
@@ -44,32 +56,86 @@ const MenuScreen = () => {
     };
 
     const handleDeleteItem = async (itemId: string) => {
-        // Confirm logic here
-        dispatch(deleteItem(itemId));
-        await RestaurantService.deleteItem(itemId);
+        Alert.alert(
+            'Delete Item',
+            'Are you sure you want to delete this item?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        dispatch(deleteItem(itemId));
+                        await RestaurantService.deleteItem(itemId);
+                    }
+                }
+            ]
+        );
+    };
+
+    const saveReorder = async () => {
+        // Optimistic update
+        dispatch(setCategories(tempCategories));
+        setIsReordering(false);
+        try {
+            // In a real app, send new order to backend
+            // await RestaurantService.reorderCategories(tempCategories.map(c => c.id));
+        } catch (error) {
+            console.error('Failed to save order', error);
+            // Revert on error would go here
+        }
     };
 
     const getItemsByCategory = (catId: string) => {
-        return Object.values(items).filter(item => item.categoryId === catId);
+        return Object.values(items).filter((item: any) => item.categoryId === catId);
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.screenHeader}>
                 <Text style={styles.title}>Menu Management</Text>
-                <TouchableOpacity
-                    style={styles.addCatBtn}
-                    onPress={() => navigation.navigate('AddEditCategory', { mode: 'add' })}
-                >
-                    <Plus size={16} color="#FFF" />
-                    <Text style={styles.addCatText}>Add Category</Text>
-                </TouchableOpacity>
+
+                <View style={styles.headerActions}>
+                    {isReordering ? (
+                        <TouchableOpacity style={styles.doneBtn} onPress={saveReorder}>
+                            <Check size={16} color="#FFF" />
+                            <Text style={styles.btnText}>Done</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <>
+                            <TouchableOpacity
+                                style={[styles.iconBtn, { marginRight: 8 }]}
+                                onPress={() => navigation.navigate('BulkOperations')}
+                            >
+                                <CheckSquare size={20} color={colors.gray_700} />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.iconBtn, { marginRight: 8 }]}
+                                onPress={() => setIsReordering(true)}
+                            >
+                                <ArrowUpDown size={20} color={colors.gray_700} />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.addCatBtn}
+                                onPress={() => navigation.navigate('AddEditCategory', { mode: 'add' })}
+                            >
+                                <Plus size={16} color="#FFF" />
+                                <Text style={styles.btnText}>Category</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
+                </View>
             </View>
 
             {loading ? (
                 <View style={styles.loader}>
                     <ActivityIndicator size="large" color="#E23744" />
                 </View>
+            ) : isReordering ? (
+                <ReorderCategoryList
+                    categories={tempCategories}
+                    onReorder={setTempCategories}
+                />
             ) : (
                 <FlatList
                     data={categories}
@@ -87,7 +153,7 @@ const MenuScreen = () => {
                                     onToggleExpand={() => toggleExpand(category.id)}
                                     onAddItem={() => navigation.navigate('AddEditItem', { mode: 'add', categoryId: category.id })}
                                 />
-                                {isExpanded && catItems.map(menuItem => (
+                                {isExpanded && catItems.map((menuItem: any) => (
                                     <MenuItemCard
                                         key={menuItem.id}
                                         item={menuItem}
@@ -126,6 +192,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#1C1C1C',
     },
+    headerActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     addCatBtn: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -134,7 +204,20 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 8,
     },
-    addCatText: {
+    doneBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: colors.success,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
+    },
+    iconBtn: {
+        padding: 8,
+        borderRadius: 8,
+        backgroundColor: colors.gray_100,
+    },
+    btnText: {
         color: '#FFF',
         fontWeight: '600',
         marginLeft: 4,
