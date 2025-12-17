@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { Search, Filter, X } from 'lucide-react-native';
+import { Search, Filter, X, ChefHat } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import { RootState } from '../../store';
 import { setOrders, updateOrderStatus, setFilterStatus, setLoading } from '../../store/slices/orderSlice';
 import { RestaurantService } from '../../services/api/restaurant';
 import OrderCard from '../../components/orders/OrderCard';
+import PrepTimeModal from '../../components/orders/PrepTimeModal';
+import RejectReasonModal from '../../components/orders/RejectReasonModal';
 import { Order } from '../../store/slices/dashboardSlice';
+import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
+import { Button } from '@zomato/ui';
 
 const TABS = [
     { id: 'PENDING', label: 'Pending' },
@@ -17,16 +22,17 @@ const TABS = [
 
 const OrdersScreen = () => {
     const dispatch = useDispatch();
+    const navigation = useNavigation<any>();
     const { orders, filterStatus, loading } = useSelector((state: RootState) => state.orders);
-    const pendingOrdersCount = Object.values(orders).filter(o => o.status === 'PENDING').length;
-
-    // Convert orders object to array and sort by date descending
-    const ordersList = Object.values(orders).sort((a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    const pendingOrdersCount = Object.values(orders).filter((o: any) => o.status === 'PENDING').length;
 
     const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
+
+    // Modal State
+    const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+    const [showPrepModal, setShowPrepModal] = useState(false);
+    const [showRejectModal, setShowRejectModal] = useState(false);
 
     useEffect(() => {
         loadOrders();
@@ -39,7 +45,7 @@ const OrdersScreen = () => {
     const loadOrders = async () => {
         dispatch(setLoading(true));
         try {
-            const data = await RestaurantService.getAllOrders('REST-001'); // Replace with actual ID
+            const data = await RestaurantService.getAllOrders('REST-001');
             dispatch(setOrders(data));
         } catch (error) {
             console.error(error);
@@ -49,22 +55,21 @@ const OrdersScreen = () => {
     };
 
     const filterData = () => {
-        let result = ordersList;
+        let result = Object.values(orders).sort((a: any, b: any) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
 
-        // Status Filter
         if (filterStatus !== 'ALL') {
-            // Mapping 'COMPLETED' to show both DELIVERED and CANCELLED for history
             if (filterStatus === 'COMPLETED') {
-                result = result.filter(o => o.status === 'DELIVERED' || o.status === 'CANCELLED');
+                result = result.filter((o: any) => o.status === 'DELIVERED' || o.status === 'CANCELLED');
             } else {
-                result = result.filter(o => o.status === filterStatus);
+                result = result.filter((o: any) => o.status === filterStatus);
             }
         }
 
-        // Search Filter
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
-            result = result.filter(o =>
+            result = result.filter((o: any) =>
                 o.id.toLowerCase().includes(lowerQuery) ||
                 o.customerName.toLowerCase().includes(lowerQuery)
             );
@@ -73,48 +78,65 @@ const OrdersScreen = () => {
         setFilteredOrders(result);
     };
 
-    const handleAction = async (orderId: string, action: string) => {
+    const handleAction = (orderId: string, action: string) => {
+        setSelectedOrder(orderId);
+        if (action === 'ACCEPT') {
+            setShowPrepModal(true);
+        } else if (action === 'REJECT') {
+            setShowRejectModal(true);
+        } else if (action === 'MARK_READY') {
+            confirmStatusUpdate(orderId, 'READY_FOR_PICKUP');
+        }
+    };
+
+    const confirmStatusUpdate = async (orderId: string, status: string, meta?: any) => {
         try {
-            let newStatus;
-            if (action === 'ACCEPT') newStatus = 'PREPARING';
-            else if (action === 'REJECT') newStatus = 'CANCELLED';
-            else if (action === 'MARK_READY') newStatus = 'READY_FOR_PICKUP';
-            else return;
-
             // Optimistic Update
-            dispatch(updateOrderStatus({ id: orderId, status: newStatus as any }));
+            dispatch(updateOrderStatus({ id: orderId, status: status as any }));
 
-            // API Call
-            await RestaurantService.updateOrder(orderId, newStatus);
+            // Close Modals
+            setShowPrepModal(false);
+            setShowRejectModal(false);
+            setSelectedOrder(null);
+
+            // API Call (simulated)
+            await RestaurantService.updateOrder(orderId, status);
         } catch (error) {
-            console.error('Action failed', error);
-            // Ideally revert status here
+            console.error('Update failed', error);
         }
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Orders</Text>
+                <View style={styles.headerTop}>
+                    <Text style={styles.title}>Orders</Text>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('KitchenDisplay')}
+                        style={styles.kdsButton}
+                    >
+                        <ChefHat size={20} color={colors.zomato_red} style={{ marginRight: 8 }} />
+                        <Text style={{ color: colors.zomato_red, fontWeight: '600' }}>Kitchen View</Text>
+                    </TouchableOpacity>
+                </View>
 
-                {/* Search Bar */}
                 <View style={styles.searchContainer}>
-                    <Search size={20} color="#666" style={styles.searchIcon} />
+                    <Search size={20} color={colors.gray_500} style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
                         placeholder="Search by Order ID or Name"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
+                        placeholderTextColor={colors.gray_400}
                     />
                     {searchQuery.length > 0 && (
                         <TouchableOpacity onPress={() => setSearchQuery('')}>
-                            <X size={18} color="#666" />
+                            <X size={18} color={colors.gray_500} />
                         </TouchableOpacity>
                     )}
                 </View>
             </View>
 
-            {/* Tabs */}
             <View style={styles.tabsContainer}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContent}>
                     {TABS.map(tab => (
@@ -136,10 +158,9 @@ const OrdersScreen = () => {
                 </ScrollView>
             </View>
 
-            {/* List */}
             {loading ? (
                 <View style={styles.loader}>
-                    <ActivityIndicator size="large" color="#E23744" />
+                    <ActivityIndicator size="large" color={colors.zomato_red} />
                 </View>
             ) : (
                 <FlatList
@@ -147,7 +168,7 @@ const OrdersScreen = () => {
                     renderItem={({ item }) => (
                         <OrderCard
                             order={item}
-                            onPress={() => { }} // TODO: Navigate to Detail
+                            onPress={() => navigation.navigate('RestaurantOrderDetail', { orderId: item.id })}
                             onAction={(action) => handleAction(item.id, action)}
                         />
                     )}
@@ -160,6 +181,19 @@ const OrdersScreen = () => {
                     }
                 />
             )}
+
+            {/* Modals */}
+            <PrepTimeModal
+                visible={showPrepModal}
+                onClose={() => setShowPrepModal(false)}
+                onConfirm={(mins) => selectedOrder && confirmStatusUpdate(selectedOrder, 'PREPARING', { prepTime: mins })}
+            />
+
+            <RejectReasonModal
+                visible={showRejectModal}
+                onClose={() => setShowRejectModal(false)}
+                onConfirm={(reason) => selectedOrder && confirmStatusUpdate(selectedOrder, 'CANCELLED', { reason })}
+            />
         </View>
     );
 };
@@ -167,78 +201,87 @@ const OrdersScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: colors.gray_50,
     },
     header: {
-        backgroundColor: '#FFF',
-        padding: 16,
-        paddingBottom: 12,
-        elevation: 2,
+        backgroundColor: colors.white,
+        padding: spacing.base,
+        paddingBottom: spacing.sm,
+        ...shadows.sm,
+        zIndex: 1,
+    },
+    headerTop: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: spacing.md,
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1C1C1C',
-        marginBottom: 12,
+        ...typography.h1,
+        color: colors.gray_900,
+    },
+    kdsButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F5F5F5',
-        borderRadius: 8,
-        paddingHorizontal: 12,
+        backgroundColor: colors.gray_50,
+        borderRadius: borderRadius.lg,
+        paddingHorizontal: spacing.md,
         height: 44,
     },
     searchIcon: {
-        marginRight: 8,
+        marginRight: spacing.sm,
     },
     searchInput: {
         flex: 1,
-        fontSize: 16,
-        color: '#333',
+        ...typography.body_medium,
+        color: colors.gray_900,
     },
     tabsContainer: {
-        backgroundColor: '#FFF',
+        backgroundColor: colors.white,
         borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        borderBottomColor: colors.gray_200,
     },
     tabsContent: {
-        paddingHorizontal: 12,
+        paddingHorizontal: spacing.sm,
     },
     tab: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 14,
-        paddingHorizontal: 16,
+        paddingVertical: spacing.md,
+        paddingHorizontal: spacing.base,
         borderBottomWidth: 2,
         borderBottomColor: 'transparent',
     },
     activeTab: {
-        borderBottomColor: '#E23744',
+        borderBottomColor: colors.zomato_red,
     },
     tabText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#666',
+        ...typography.label_medium,
+        color: colors.gray_600,
     },
     activeTabText: {
-        color: '#E23744',
+        color: colors.zomato_red,
+        fontWeight: '700',
     },
     badge: {
-        backgroundColor: '#E23744',
+        backgroundColor: colors.zomato_red,
         paddingHorizontal: 6,
         paddingVertical: 2,
         borderRadius: 10,
-        marginLeft: 6,
+        marginLeft: spacing.xs,
     },
     badgeText: {
-        color: '#FFF',
+        color: colors.white,
         fontSize: 10,
         fontWeight: 'bold',
     },
     list: {
-        padding: 16,
-        paddingBottom: 20,
+        padding: spacing.base,
+        paddingBottom: spacing.xl,
     },
     loader: {
         flex: 1,
@@ -246,12 +289,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyState: {
-        padding: 40,
+        padding: spacing.xl,
         alignItems: 'center',
     },
     emptyText: {
-        color: '#888',
-        fontSize: 16,
+        ...typography.body_large,
+        color: colors.gray_500,
     }
 });
 
