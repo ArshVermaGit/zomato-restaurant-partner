@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { colors, spacing } from '../../theme';
+import DayScheduleRow from '../../components/settings/DayScheduleRow';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -14,6 +16,11 @@ const OperatingHoursScreen = ({ navigation }: any) => {
         setHours(newHours);
     };
 
+    const handleTimePress = (index: number) => {
+        // Mock time picker interaction
+        Alert.alert('Edit Time', `Set opening hours for ${hours[index].day}`);
+    };
+
     const handleSave = () => {
         // Here we would dispatch updateRestaurantDetails with new hours
         Alert.alert('Success', 'Operating hours updated');
@@ -26,25 +33,28 @@ const OperatingHoursScreen = ({ navigation }: any) => {
                 <Text style={styles.title}>Operating Hours</Text>
             </View>
 
+            <View style={styles.infoBox}>
+                <Text style={styles.infoText}>Set your general operating hours. You can adjust specific timings for holidays in Holiday Settings.</Text>
+            </View>
+
             <View style={styles.list}>
                 {hours.map((item, index) => (
-                    <View key={item.day} style={styles.row}>
-                        <View>
-                            <Text style={styles.day}>{item.day}</Text>
-                            <Text style={styles.time}>{item.isOpen ? item.time : 'Closed'}</Text>
-                        </View>
-                        <Switch
-                            value={item.isOpen}
-                            onValueChange={() => toggleDay(index)}
-                            trackColor={{ false: '#EEE', true: '#E23744' }}
-                        />
-                    </View>
+                    <DayScheduleRow
+                        key={item.day}
+                        day={item.day}
+                        isOpen={item.isOpen}
+                        time={item.time}
+                        onToggle={() => toggleDay(index)}
+                        onTimePress={() => handleTimePress(index)}
+                    />
                 ))}
             </View>
 
-            <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-                <Text style={styles.saveText}>Save Hours</Text>
-            </TouchableOpacity>
+            <View style={styles.footer}>
+                <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+                    <Text style={styles.saveText}>Save Hours</Text>
+                </TouchableOpacity>
+            </View>
         </ScrollView>
     );
 };
@@ -52,48 +62,48 @@ const OperatingHoursScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFF',
+        backgroundColor: colors.gray_50,
     },
     header: {
-        padding: 16,
+        padding: spacing.md,
         paddingTop: 50,
+        backgroundColor: colors.white,
         borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
+        borderBottomColor: colors.gray_100,
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: colors.gray_900,
+    },
+    infoBox: {
+        padding: spacing.md,
+        backgroundColor: colors.primary.zomato_red_tint,
+        margin: spacing.md,
+        borderRadius: 8,
+    },
+    infoText: {
+        color: colors.zomato_red,
+        fontSize: 12,
+        lineHeight: 18,
     },
     list: {
-        padding: 16,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 16,
+        backgroundColor: colors.white,
+        borderTopWidth: 1,
         borderBottomWidth: 1,
-        borderBottomColor: '#F5F5F5',
+        borderColor: colors.gray_200,
     },
-    day: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#1C1C1C',
-        marginBottom: 4,
-    },
-    time: {
-        fontSize: 14,
-        color: '#666',
+    footer: {
+        padding: spacing.md,
     },
     saveBtn: {
-        backgroundColor: '#E23744',
-        margin: 16,
-        padding: 16,
+        backgroundColor: colors.zomato_red,
+        padding: spacing.md,
         borderRadius: 8,
         alignItems: 'center',
     },
     saveText: {
-        color: '#FFF',
+        color: colors.white,
         fontSize: 16,
         fontWeight: 'bold',
     }
