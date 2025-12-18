@@ -1,17 +1,39 @@
 {
-  "extends": "@react-native/typescript-config",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-native",
     "types": [
       "jest",
       "node"
     ],
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@zomato/ui": [
+        "../../packages/ui/src"
+      ],
+      "@zomato/shared-types": [
+        "../../packages/shared-types/src"
+      ],
+      "@zomato/shared-utils": [
+        "../../packages/shared-utils/src"
+      ],
+      "@zomato/design-tokens": [
+        "../../packages/design-tokens/src"
+      ]
+    }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx"
+    "src/**/*",
+    "App.tsx",
+    "index.js",
+    "env.d.ts"
   ],
   "exclude": [
-    "**/node_modules",
-    "**/Pods"
+    "node_modules",
+    "**/node_modules/*",
+    "dist"
   ]
 }
