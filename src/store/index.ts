@@ -13,6 +13,8 @@ import financialsReducer from './slices/financialsSlice';
 import staffReducer from './slices/staffSlice';
 import notificationReducer from './slices/notificationSlice';
 
+import { api } from '../services/api/baseApi';
+
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
@@ -20,6 +22,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+    [api.reducerPath]: api.reducer,
     auth: authReducer,
     restaurant: restaurantReducer,
     dashboard: dashboardReducer,
@@ -41,7 +44,7 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-        }),
+        }).concat(api.middleware),
 });
 
 export const persistor = persistStore(store);
