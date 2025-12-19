@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import NotificationService from '../../services/notification/NotificationService';
 import { Notification } from '../../store/slices/notificationSlice';
 import { Bell } from 'lucide-react-native';
@@ -8,14 +8,15 @@ const NotificationToast = () => {
     const [notification, setNotification] = useState<Notification | null>(null);
     const [slideAnim] = useState(new Animated.Value(-100)); // Start off-screen top
 
-    useEffect(() => {
-        const unsubscribe = NotificationService.subscribe('notification', (notif: Notification) => {
-            showToast(notif);
-        });
-        return unsubscribe;
-    }, []);
+    const hideToast = React.useCallback(() => {
+        Animated.timing(slideAnim, {
+            toValue: -100,
+            duration: 300,
+            useNativeDriver: true,
+        }).start(() => setNotification(null));
+    }, [slideAnim]);
 
-    const showToast = (notif: Notification) => {
+    const showToast = React.useCallback((notif: Notification) => {
         setNotification(notif);
 
         // Slide down
@@ -28,15 +29,14 @@ const NotificationToast = () => {
         setTimeout(() => {
             hideToast();
         }, 4000);
-    };
+    }, [hideToast, slideAnim]);
 
-    const hideToast = () => {
-        Animated.timing(slideAnim, {
-            toValue: -100,
-            duration: 300,
-            useNativeDriver: true,
-        }).start(() => setNotification(null));
-    };
+    useEffect(() => {
+        const unsubscribe = NotificationService.subscribe('notification', (notif: Notification) => {
+            showToast(notif);
+        });
+        return unsubscribe;
+    }, [showToast]);
 
     if (!notification) return null;
 
