@@ -8,7 +8,8 @@
     "dev": "expo start",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@notifee/react-native": "^9.1.8",

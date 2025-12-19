@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { AlertCircle, WifiOff, RefreshCcw, ShieldAlert } from 'lucide-react-native';
+import { AlertCircle, WifiOff, RefreshCcw } from 'lucide-react-native';
 import { colors, spacing, typography, borderRadius } from '@/theme';
 import { ApiError, ErrorCode } from '@/services/api/api.types';
 
@@ -20,7 +20,6 @@ export const ApiErrorDisplay: React.FC<Props> = ({ error, onRetry, style }) => {
 
         switch (err.code) {
             case ErrorCode.OFFLINE:
-            case ErrorCode.NETWORK_ERROR:
                 return { icon: WifiOff, color: colors.secondary.gray_600, title: 'Network Issue', message: err.message };
             case ErrorCode.TIMEOUT:
                 return { icon: RefreshCcw, color: colors.primary.zomato_red, title: 'Timed Out', message: 'Unable to reach the server.' };
