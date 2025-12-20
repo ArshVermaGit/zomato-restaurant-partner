@@ -1,9 +1,6 @@
-import React from 'react';
-import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { EmptyState } from '@zomato/ui';
 import { Package, FileText, MessageSquare } from 'lucide-react-native';
-import { colors } from '../../theme';
 
 interface Props {
     onRefresh?: () => void;
