@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MenuItem } from '../../store/slices/menuSlice';
-import { Check, Square } from 'lucide-react-native';
-import { colors, typography, spacing, borderRadius } from '../../theme';
+import { Check } from 'lucide-react-native';
+import { colors, typography, spacing } from '../../theme';
 
 interface Props {
     item: MenuItem;
