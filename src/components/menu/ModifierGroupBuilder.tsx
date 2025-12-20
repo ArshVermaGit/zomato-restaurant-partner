@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native';
-import { Plus, Trash2, Edit2, X, Check } from 'lucide-react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { Plus, Trash2, Edit2, X } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../theme';
 import { Button } from '@zomato/ui';
 
@@ -107,28 +107,28 @@ const ModifierGroupBuilder: React.FC<Props> = ({ groups, onChange }) => {
                 </View>
 
                 <View style={styles.row}>
-                    <View style={[styles.field, { flex: 1, marginRight: 8 }]}>
+                    <View style={styles.flexFieldRight}>
                         <Text style={styles.label}>Min Selection</Text>
                         <TextInput
                             style={styles.input}
                             value={tempGroup.minSelection.toString()}
-                            onChangeText={t => setTempGroup({ ...tempGroup, minSelection: parseInt(t) || 0 })}
+                            onChangeText={t => setTempGroup({ ...tempGroup, minSelection: parseInt(t, 10) || 0 })}
                             keyboardType="numeric"
                         />
                     </View>
-                    <View style={[styles.field, { flex: 1, marginLeft: 8 }]}>
+                    <View style={styles.flexFieldLeft}>
                         <Text style={styles.label}>Max Selection</Text>
                         <TextInput
                             style={styles.input}
                             value={tempGroup.maxSelection.toString()}
-                            onChangeText={t => setTempGroup({ ...tempGroup, maxSelection: parseInt(t) || 1 })}
+                            onChangeText={t => setTempGroup({ ...tempGroup, maxSelection: parseInt(t, 10) || 1 })}
                             keyboardType="numeric"
                         />
                     </View>
                 </View>
 
                 <View style={styles.optionsSection}>
-                    <Text style={[styles.label, { marginBottom: 8 }]}>Options</Text>
+                    <Text style={styles.optionsLabel}>Options</Text>
                     {tempGroup.options.map(opt => (
                         <View key={opt.id} style={styles.optionRow}>
                             <Text style={styles.optionName}>{opt.name}</Text>
@@ -141,13 +141,13 @@ const ModifierGroupBuilder: React.FC<Props> = ({ groups, onChange }) => {
 
                     <View style={styles.addOptionRow}>
                         <TextInput
-                            style={[styles.input, { flex: 2, marginRight: 8 }]}
+                            style={styles.optionNameInput}
                             placeholder="Option Name"
                             value={newOption.name}
                             onChangeText={t => setNewOption({ ...newOption, name: t })}
                         />
                         <TextInput
-                            style={[styles.input, { flex: 1, marginRight: 8 }]}
+                            style={styles.optionPriceInput}
                             placeholder="Price"
                             keyboardType="numeric"
                             value={newOption.price}
@@ -159,7 +159,7 @@ const ModifierGroupBuilder: React.FC<Props> = ({ groups, onChange }) => {
                     </View>
                 </View>
 
-                <View style={{ marginTop: 16 }}>
+                <View style={styles.saveBtnContainer}>
                     <Button variant="primary" size="medium" onPress={saveGroup}>
                         Save Group
                     </Button>
@@ -311,6 +311,44 @@ const styles = StyleSheet.create({
     groupActions: {
         flexDirection: 'row',
         gap: spacing.md,
+    },
+    flexFieldRight: {
+        marginBottom: spacing.md,
+        flex: 1,
+        marginRight: 8,
+    },
+    flexFieldLeft: {
+        marginBottom: spacing.md,
+        flex: 1,
+        marginLeft: 8,
+    },
+    optionsLabel: {
+        ...typography.label_small,
+        color: colors.gray_600,
+        marginBottom: 8,
+    },
+    optionNameInput: {
+        backgroundColor: colors.white,
+        borderWidth: 1,
+        borderColor: colors.gray_300,
+        borderRadius: borderRadius.md,
+        padding: spacing.sm,
+        fontSize: 14,
+        flex: 2,
+        marginRight: 8,
+    },
+    optionPriceInput: {
+        backgroundColor: colors.white,
+        borderWidth: 1,
+        borderColor: colors.gray_300,
+        borderRadius: borderRadius.md,
+        padding: spacing.sm,
+        fontSize: 14,
+        flex: 1,
+        marginRight: 8,
+    },
+    saveBtnContainer: {
+        marginTop: 16,
     }
 });
 
