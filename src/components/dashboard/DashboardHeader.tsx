@@ -25,7 +25,7 @@ const DashboardHeader: React.FC<Props> = ({ restaurantName, isOpen, onMenuPress 
                 <View>
                     <Text style={styles.title}>{restaurantName}</Text>
                     <View style={styles.statusRow}>
-                        <View style={[styles.dot, { backgroundColor: isOpen ? '#4CAF50' : '#F44336' }]} />
+                        <View style={[styles.dot, isOpen ? styles.dotOpen : styles.dotClosed]} />
                         <Text style={styles.statusText}>{isOpen ? 'Open Now' : 'Closed'}</Text>
                     </View>
                 </View>
@@ -90,6 +90,12 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#666',
         fontWeight: '500',
+    },
+    dotOpen: {
+        backgroundColor: '#4CAF50',
+    },
+    dotClosed: {
+        backgroundColor: '#F44336',
     },
     right: {
         alignItems: 'flex-end',
