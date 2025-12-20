@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { Timer, Check, X } from 'lucide-react-native';
+import { Timer, X } from 'lucide-react-native';
 import { Order } from '../../store/slices/dashboardSlice';
 
 interface Props {
