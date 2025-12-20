@@ -13,7 +13,7 @@ export const OrdersLoadingSkeleton = () => {
                         <ShimmerPlaceholder width={60} height={24} borderRadius={12} />
                     </View>
                     <View style={styles.content}>
-                        <ShimmerPlaceholder width="70%" height={16} style={{ marginBottom: 8 }} />
+                        <ShimmerPlaceholder width="70%" height={16} style={styles.shimmerMargin} />
                         <ShimmerPlaceholder width="40%" height={16} />
                     </View>
                     <View style={styles.footer}>
@@ -45,6 +45,9 @@ const styles = StyleSheet.create({
     },
     content: {
         marginBottom: spacing.md,
+    },
+    shimmerMargin: {
+        marginBottom: spacing.sm,
     },
     footer: {
         flexDirection: 'row',
