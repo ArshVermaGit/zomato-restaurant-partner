@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
-import { TrendingUp, DollarSign, Calendar } from 'lucide-react-native';
+import { TrendingUp } from 'lucide-react-native';
 
 interface Props {
     today: number;
