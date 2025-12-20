@@ -1,22 +1,18 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { setStaff, removeStaffMember, setLoading } from '../../store/slices/staffSlice';
 import { RestaurantService } from '../../services/api/restaurant';
 import StaffCard from '../../components/settings/StaffCard';
 import { Plus } from 'lucide-react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 const StaffManagementScreen = ({ navigation }: any) => {
     const dispatch = useDispatch();
     const { members, loading } = useSelector((state: RootState) => state.staff);
 
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const loadData = async () => {
+    const loadData = React.useCallback(async () => {
         dispatch(setLoading(true));
         try {
             const data = await RestaurantService.getStaff('REST-001');
@@ -27,7 +23,11 @@ const StaffManagementScreen = ({ navigation }: any) => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     const handleDelete = async (id: string) => {
         Alert.alert('Confirm Delete', 'Remove this staff member?', [

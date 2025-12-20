@@ -1,4 +1,4 @@
-import { Vibration, LayoutAnimation, UIManager, Platform, Alert } from 'react-native';
+import { Vibration, LayoutAnimation, UIManager, Platform } from 'react-native';
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android') {

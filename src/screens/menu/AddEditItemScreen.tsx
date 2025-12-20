@@ -140,7 +140,7 @@ const AddEditItemScreen = () => {
                 </View>
 
                 <View style={styles.row}>
-                    <View style={{ flex: 1, marginRight: 16 }}>
+                    <View style={styles.flexField}>
                         <Text style={styles.label}>Price (₹)</Text>
                         <TextInput
                             style={styles.input}
@@ -151,7 +151,7 @@ const AddEditItemScreen = () => {
                             placeholderTextColor={colors.gray_400}
                         />
                     </View>
-                    <View style={{ width: 140 }}>
+                    <View style={styles.fixedWidthField}>
                         <Text style={styles.label}>Type</Text>
                         <VegNonVegSelector
                             isVeg={form.isVeg}
@@ -190,7 +190,7 @@ const AddEditItemScreen = () => {
             </ScrollView>
 
             <View style={styles.footer}>
-                <View style={{ width: '100%' }}>
+                <View style={styles.fullWidthButton}>
                     <Button
                         variant="primary"
                         size="large"
@@ -300,6 +300,16 @@ const styles = StyleSheet.create({
         padding: spacing.md,
         borderTopWidth: 1,
         borderTopColor: colors.gray_100,
+    },
+    flexField: {
+        flex: 1,
+        marginRight: 16,
+    },
+    fixedWidthField: {
+        width: 140,
+    },
+    fullWidthButton: {
+        width: '100%',
     }
 });
 

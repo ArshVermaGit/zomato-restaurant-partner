@@ -9,8 +9,6 @@ interface Props {
 }
 
 const RatingSummary: React.FC<Props> = ({ average, totalCount, distribution }) => {
-    const maxCount = Math.max(...Object.values(distribution));
-
     return (
         <View style={styles.container}>
             <View style={styles.left}>

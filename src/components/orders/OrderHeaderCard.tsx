@@ -14,7 +14,8 @@ export const OrderHeaderCard: React.FC<OrderHeaderCardProps> = ({ orderId, statu
             const diff = Date.now() - new Date(dateString).getTime();
             const mins = Math.floor(diff / 60000);
             return `${mins} mins ago`;
-        } catch (e) {
+        } catch (error) {
+            console.warn('Error calculating time ago:', error);
             return dateString;
         }
     };

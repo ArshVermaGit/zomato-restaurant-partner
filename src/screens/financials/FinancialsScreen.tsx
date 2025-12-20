@@ -16,11 +16,7 @@ const FinancialsScreen = ({ navigation }: any) => {
     const dispatch = useDispatch();
     const { overview, transactions, bankAccount, loading } = useSelector((state: RootState) => state.financials);
 
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const loadData = async () => {
+    const loadData = React.useCallback(async () => {
         dispatch(setLoading(true));
         try {
             const overviewData = await RestaurantService.getFinancialsOverview('REST-001');
@@ -38,7 +34,11 @@ const FinancialsScreen = ({ navigation }: any) => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     if (loading || !overview) {
         return (

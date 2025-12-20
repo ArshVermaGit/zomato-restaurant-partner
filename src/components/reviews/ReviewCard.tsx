@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Review } from '../../store/slices/reviewsSlice';
 import { colors, typography, spacing, borderRadius } from '../../theme';
-import { Star } from 'lucide-react-native';
 import { Button } from '@zomato/ui';
 
 interface Props {

@@ -73,7 +73,7 @@ const reviewsSlice = createSlice({
             } else if (action.payload === 'PHOTOS') {
                 state.filteredReviews = state.reviews.filter(r => r.hasPhotos);
             } else {
-                const rating = parseInt(action.payload);
+                const rating = parseInt(action.payload, 10);
                 state.filteredReviews = state.reviews.filter(r => r.rating === rating);
             }
         },

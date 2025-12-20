@@ -55,6 +55,7 @@ const axiosBaseQuery = (
     if (!state.isConnected) {
         return {
             error: {
+                status: 0,
                 code: ErrorCode.OFFLINE,
                 message: 'Restaurant is offline. Please reconnect to manage orders.',
                 timestamp: new Date().toISOString(),
@@ -104,7 +105,7 @@ const axiosBaseQuery = (
 
         // 3. Error Transformation
         let transformedError: ApiError = {
-            status,
+            status: status || 500,
             code: ErrorCode.UNKNOWN,
             message: errorData?.message || err.message || 'Server error occurred.',
             errors: errorData?.errors,

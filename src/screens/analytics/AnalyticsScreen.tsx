@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { setAnalyticsData, setTopItems, setLoading } from '../../store/slices/analyticsSlice';
 import { RestaurantService } from '../../services/api/restaurant';
-import { Download, TrendingUp, DollarSign, Star, Clock } from 'lucide-react-native';
+import { TrendingUp, DollarSign, Star, Clock } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../theme';
 import { Button } from '@zomato/ui';
 
@@ -21,11 +21,7 @@ const AnalyticsScreen = () => {
     const { overview, revenueTrend, ordersTrend, topItems, loading } = useSelector((state: RootState) => state.analytics);
     const [selectedRange, setSelectedRange] = useState('WEEK');
 
-    useEffect(() => {
-        loadAnalytics();
-    }, [selectedRange]);
-
-    const loadAnalytics = async () => {
+    const loadAnalytics = React.useCallback(async () => {
         dispatch(setLoading(true));
         try {
             const data = await RestaurantService.getAnalytics('REST-001', selectedRange);
@@ -38,7 +34,11 @@ const AnalyticsScreen = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch, selectedRange]);
+
+    useEffect(() => {
+        loadAnalytics();
+    }, [selectedRange, loadAnalytics]);
 
     const chartConfig = {
         backgroundGradientFrom: colors.white,
@@ -152,7 +152,7 @@ const AnalyticsScreen = () => {
                      The user asked for `leftIcon={<Download />}`, I will check if I can support similar structure.
                      Since Button is from @zomato/ui, I'll stick to children. 
                 */}
-                <View style={{ width: '100%' }}>
+                <View style={styles.fullWidth}>
                     <Button variant="outline" size="large" onPress={() => console.log('Download')}>
                         Download Report
                     </Button>
@@ -209,6 +209,9 @@ const styles = StyleSheet.create({
     downloadContainer: {
         marginTop: spacing.xl,
         marginBottom: spacing.xl,
+    },
+    fullWidth: {
+        width: '100%',
     }
 });
 

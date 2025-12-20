@@ -4,12 +4,16 @@ import { RestaurantStats, OrderDetail, ApiResponse } from './api.types';
 export const restaurantApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getRestaurantStats: builder.query<ApiResponse<RestaurantStats>, string>({
-            query: (id) => `/restaurants/${id}/stats`,
+            query: (id) => ({
+                url: `/restaurants/${id}/stats`,
+                method: 'GET',
+            }),
             providesTags: ['Stats'],
         }),
         getRestaurantOrders: builder.query<ApiResponse<OrderDetail[]>, { id: string; status?: string }>({
             query: ({ id, status }) => ({
                 url: `/restaurants/${id}/orders`,
+                method: 'GET',
                 params: { status },
             }),
             providesTags: ['Orders'],

@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, Dimensions } from 'react-native';
-import Animated, { useSharedValue, useAnimatedScrollHandler, SharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { Package, FileText, TrendingUp } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
@@ -8,9 +8,10 @@ import { Button } from '@zomato/ui';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const AnimatedDot = ({ index, scrollX }: { index: number, scrollX: SharedValue<number> }) => {
-    return <View style={[styles.dot, { opacity: 1 }]} />;
-};
+// Pagination dots for MVP
+// const AnimatedDot = ({ index, scrollX }: { index: number, scrollX: SharedValue<number> }) => {
+//     return <View style={[styles.dot, { opacity: 1 }]} />;
+// };
 
 export const RestaurantOnboardingScreen = () => {
     const navigation = useNavigation<any>();
@@ -87,7 +88,7 @@ export const RestaurantOnboardingScreen = () => {
             {/* Basic Pagination for MVP */}
             <View style={styles.pagination}>
                 {slides.map((_, index) => (
-                    <View key={index} style={[styles.dot, { backgroundColor: colors.primary.zomato_red, opacity: 0.5 }]} />
+                    <View key={index} style={[styles.dot, styles.dotInactive]} />
                 ))}
             </View>
 
@@ -117,5 +118,6 @@ const styles = StyleSheet.create({
     description: { ...typography.body_medium, color: colors.secondary.gray_600, textAlign: 'center', lineHeight: 24 }, // Fixed typography
     pagination: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, marginBottom: spacing.xl },
     dot: { width: 8, height: 8, borderRadius: 4 },
+    dotInactive: { backgroundColor: colors.primary.zomato_red, opacity: 0.5 },
     bottomAction: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl },
 });

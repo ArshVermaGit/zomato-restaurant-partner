@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { Search, Filter, X, ChefHat } from 'lucide-react-native';
+import { Search, X, ChefHat } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { RootState } from '../../store';
@@ -11,7 +11,7 @@ import PrepTimeModal from '../../components/orders/PrepTimeModal';
 import RejectReasonModal from '../../components/orders/RejectReasonModal';
 import { Order } from '../../store/slices/dashboardSlice';
 import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
-import { Button } from '@zomato/ui';
+
 
 const TABS = [
     { id: 'PENDING', label: 'Pending' },
@@ -34,27 +34,19 @@ const OrdersScreen = () => {
     const [showPrepModal, setShowPrepModal] = useState(false);
     const [showRejectModal, setShowRejectModal] = useState(false);
 
-    useEffect(() => {
-        loadOrders();
-    }, []);
-
-    useEffect(() => {
-        filterData();
-    }, [orders, filterStatus, searchQuery]);
-
-    const loadOrders = async () => {
+    const loadOrders = React.useCallback(async () => {
         dispatch(setLoading(true));
         try {
             const data = await RestaurantService.getAllOrders('REST-001');
             dispatch(setOrders(data));
-        } catch (error) {
-            console.error(error);
+        } catch (_) {
+            console.error(_);
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
 
-    const filterData = () => {
+    const filterData = React.useCallback(() => {
         let result = Object.values(orders).sort((a: any, b: any) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
@@ -76,7 +68,15 @@ const OrdersScreen = () => {
         }
 
         setFilteredOrders(result);
-    };
+    }, [orders, filterStatus, searchQuery]);
+
+    useEffect(() => {
+        loadOrders();
+    }, [loadOrders]);
+
+    useEffect(() => {
+        filterData();
+    }, [filterData]);
 
     const handleAction = (orderId: string, action: string) => {
         setSelectedOrder(orderId);
@@ -89,7 +89,7 @@ const OrdersScreen = () => {
         }
     };
 
-    const confirmStatusUpdate = async (orderId: string, status: string, meta?: any) => {
+    const confirmStatusUpdate = async (orderId: string, status: string) => {
         try {
             // Optimistic Update
             dispatch(updateOrderStatus({ id: orderId, status: status as any }));
@@ -115,8 +115,8 @@ const OrdersScreen = () => {
                         onPress={() => navigation.navigate('KitchenDisplay')}
                         style={styles.kdsButton}
                     >
-                        <ChefHat size={20} color={colors.zomato_red} style={{ marginRight: 8 }} />
-                        <Text style={{ color: colors.zomato_red, fontWeight: '600' }}>Kitchen View</Text>
+                        <ChefHat size={20} color={colors.zomato_red} style={styles.kdsIcon} />
+                        <Text style={styles.kdsText}>Kitchen View</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -186,13 +186,13 @@ const OrdersScreen = () => {
             <PrepTimeModal
                 visible={showPrepModal}
                 onClose={() => setShowPrepModal(false)}
-                onConfirm={(mins) => selectedOrder && confirmStatusUpdate(selectedOrder, 'PREPARING', { prepTime: mins })}
+                onConfirm={() => selectedOrder && confirmStatusUpdate(selectedOrder, 'PREPARING')}
             />
 
             <RejectReasonModal
                 visible={showRejectModal}
                 onClose={() => setShowRejectModal(false)}
-                onConfirm={(reason) => selectedOrder && confirmStatusUpdate(selectedOrder, 'CANCELLED', { reason })}
+                onConfirm={() => selectedOrder && confirmStatusUpdate(selectedOrder, 'CANCELLED')}
             />
         </View>
     );
@@ -295,6 +295,13 @@ const styles = StyleSheet.create({
     emptyText: {
         ...typography.body_large,
         color: colors.gray_500,
+    },
+    kdsIcon: {
+        marginRight: 8,
+    },
+    kdsText: {
+        color: colors.zomato_red,
+        fontWeight: '600',
     }
 });
 

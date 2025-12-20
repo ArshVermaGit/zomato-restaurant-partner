@@ -8,8 +8,7 @@ import { RootState } from '../store';
 import {
     setStats,
     setPendingOrders,
-    setRecentOrders,
-    setRestaurantStatus
+    setRecentOrders
 } from '../store/slices/dashboardSlice';
 import { RestaurantService } from '../services/api/restaurant';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -37,16 +36,7 @@ const DashboardScreen = () => {
     // Local state for UI responsiveness (optimistic updates), synced with Redux via effects
     const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
-        if (currentRestaurant) {
-            loadDashboardData();
-            setIsOpen(currentRestaurant.status === 'ACTIVE');
-            NotificationService.connect(currentRestaurant.id);
-        }
-        return () => NotificationService.disconnect();
-    }, [currentRestaurant]);
-
-    const loadDashboardData = async () => {
+    const loadDashboardData = React.useCallback(async () => {
         if (!currentRestaurant) return;
         try {
             const stats = await RestaurantService.getDashboardStats(currentRestaurant.id);
@@ -60,7 +50,16 @@ const DashboardScreen = () => {
         } catch (error) {
             console.error('Failed to load dashboard', error);
         }
-    };
+    }, [currentRestaurant, dispatch]);
+
+    useEffect(() => {
+        if (currentRestaurant) {
+            loadDashboardData();
+            setIsOpen(currentRestaurant.status === 'ACTIVE');
+            NotificationService.connect(currentRestaurant.id);
+        }
+        return () => NotificationService.disconnect();
+    }, [currentRestaurant, loadDashboardData]);
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -291,7 +290,7 @@ const DashboardScreen = () => {
                         />
                     </View>
 
-                    <View style={{ height: 80 }} />
+                    <View style={styles.tabSpacing} />
                 </ScrollView>
             </SafeAreaView>
         </DrawerLayoutAndroid>
@@ -329,15 +328,14 @@ const QuickActionCard = ({ icon, title, subtitle, onPress }: any) => (
     </TouchableOpacity>
 );
 
-const OrderCard = ({ order, compact, navigation }: any) => (
+const OrderCard = ({ order, compact }: any) => (
     <TouchableOpacity
         style={[styles.orderCard, compact && styles.orderCardCompact]}
-    // onPress={() => navigation.navigate('OrderDetail', { orderId: order.id })} // Assuming this route exists
     >
         <View style={styles.orderHeader}>
             <Text style={styles.orderId}>#{order.id.substring(0, 6)}</Text>
             {/* StatusBadge would be here, skipping for MVP or simple Text */}
-            <Text style={{ ...typography.caption, fontWeight: '700' }}>{order.status}</Text>
+            <Text style={styles.orderStatusText}>{order.status}</Text>
         </View>
         <Text style={styles.orderCustomer}>{order.customer?.name || 'Customer'}</Text>
         <View style={styles.orderFooter}>
@@ -397,6 +395,8 @@ const styles = StyleSheet.create({
     quickActionIcon: { width: 56, height: 56, borderRadius: borderRadius.xl, backgroundColor: colors.gray_50, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md },
     quickActionTitle: { ...typography.label_small, color: colors.gray_900, marginBottom: spacing.xs, textAlign: 'center' },
     quickActionSubtitle: { ...typography.caption, color: colors.gray_600, textAlign: 'center' },
+    tabSpacing: { height: 80 },
+    orderStatusText: { ...typography.caption, fontWeight: '700' },
 });
 
 export default DashboardScreen;

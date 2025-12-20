@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { RestaurantService } from '../../services/api/restaurant';
 import KitchenOrderCard from '../../components/orders/KitchenOrderCard';
 import { updateOrderStatus } from '../../store/slices/orderSlice';
-import { colors, typography, spacing, borderRadius } from '../../theme';
-import { ChefHat, Grid, List } from 'lucide-react-native';
+import { colors, typography, spacing } from '../../theme';
+import { ChefHat, Grid } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 

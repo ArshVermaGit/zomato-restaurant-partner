@@ -29,11 +29,7 @@ const ReviewsScreen = () => {
     const [selectedReview, setSelectedReview] = useState<Review | null>(null);
     const [isResponseModalVisible, setIsResponseModalVisible] = useState(false);
 
-    useEffect(() => {
-        loadReviews();
-    }, []);
-
-    const loadReviews = async () => {
+    const loadReviews = React.useCallback(async () => {
         dispatch(setLoading(true));
         try {
             const data = await RestaurantService.getReviews('REST-001');
@@ -43,7 +39,11 @@ const ReviewsScreen = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadReviews();
+    }, [loadReviews]);
 
     const handleOpenResponse = (review: Review) => {
         setSelectedReview(review);

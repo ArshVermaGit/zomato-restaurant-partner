@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Toast from 'react-native-toast-message';
-import { ApiError, ErrorCode } from '../services/api/api.types';
+import { ApiError } from '../services/api/api.types';
 
 /**
  * Standardized feedback hook for Restaurant Partner.

@@ -3,13 +3,9 @@ import { createStackNavigator, CardStyleInterpolators, HeaderStyleInterpolators,
 import RestaurantSelectionScreen from '../screens/auth/RestaurantSelectionScreen';
 import { RestaurantSplashScreen } from '../screens/auth/RestaurantSplashScreen';
 import { RestaurantOnboardingScreen } from '../screens/auth/RestaurantOnboardingScreen';
-import DashboardScreen from '../screens/DashboardScreen';
-import { OrdersStack } from './OrdersStack';
-import { MenuStack } from './MenuStack'; // Import MenuStack
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import KitchenDisplayScreen from '../screens/orders/KitchenDisplayScreen';
-import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
 import ReviewsScreen from '../screens/reviews/ReviewsScreen';
 import { FinancialStack } from './FinancialStack';
 import { BottomTabNavigator } from './BottomTabNavigator';

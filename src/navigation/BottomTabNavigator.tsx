@@ -39,23 +39,9 @@ export const BottomTabNavigator = () => {
                     marginBottom: 5,
                     fontWeight: '600',
                 },
-                tabBarIcon: ({ color, focused }) => {
-                    let Icon;
-                    switch (route.name) {
-                        case 'Home': Icon = Home; break;
-                        case 'OrdersTab': Icon = ShoppingBag; break;
-                        case 'MenuTab': Icon = FileText; break;
-                        case 'AnalyticsTab': Icon = BarChart2; break;
-                        case 'SettingsTab': Icon = MoreHorizontal; break;
-                        default: Icon = Home;
-                    }
-                    const LucideIcon = Icon as any;
-                    return (
-                        <View style={[styles.tabIcon, focused && styles.tabIconActive]}>
-                            <LucideIcon size={24} color={color} />
-                        </View>
-                    );
-                }
+                tabBarIcon: (props) => (
+                    <TabIcon color={props.color} focused={props.focused} routeName={route.name} />
+                )
             })}
         >
             <Tab.Screen
@@ -88,6 +74,24 @@ export const BottomTabNavigator = () => {
                 options={{ tabBarLabel: 'More' }}
             />
         </Tab.Navigator>
+    );
+};
+
+const TabIcon = ({ color, focused, routeName }: any) => {
+    let Icon;
+    switch (routeName) {
+        case 'Home': Icon = Home; break;
+        case 'OrdersTab': Icon = ShoppingBag; break;
+        case 'MenuTab': Icon = FileText; break;
+        case 'AnalyticsTab': Icon = BarChart2; break;
+        case 'SettingsTab': Icon = MoreHorizontal; break;
+        default: Icon = Home;
+    }
+    const LucideIcon = Icon as any;
+    return (
+        <View style={[styles.tabIcon, focused && styles.tabIconActive]}>
+            <LucideIcon size={24} color={color} />
+        </View>
     );
 };
 

@@ -31,7 +31,7 @@ export const RestaurantSplashScreen = () => {
             navigation.replace('Onboarding');
         }, 2500);
         return () => clearTimeout(timer);
-    }, []);
+    }, [logoRotate, logoScale, navigation, opacity]);
 
     const logoStyle = useAnimatedStyle(() => ({
         transform: [

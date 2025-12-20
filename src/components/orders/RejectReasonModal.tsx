@@ -87,14 +87,14 @@ const RejectReasonModal: React.FC<Props> = ({ visible, onClose, onConfirm }) => 
                     </View>
 
                     <View style={styles.footer}>
-                        <View style={{ width: '100%', borderColor: colors.error }}>
+                        <View style={styles.buttonWrapper}>
                             <Button
                                 variant="secondary"
                                 size="large"
                                 onPress={handleConfirm}
                                 disabled={!selectedReason && !customReason}
                             >
-                                <Text style={{ color: colors.error }}>Reject Order</Text>
+                                <Text style={styles.buttonText}>Reject Order</Text>
                             </Button>
                         </View>
                     </View>
@@ -194,6 +194,13 @@ const styles = StyleSheet.create({
     },
     footer: {
         marginTop: spacing.sm,
+    },
+    buttonWrapper: {
+        width: '100%',
+        borderColor: colors.error,
+    },
+    buttonText: {
+        color: colors.error,
     }
 });
 

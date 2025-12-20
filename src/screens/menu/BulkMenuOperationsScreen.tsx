@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { bulkUpdateAvailability, bulkDeleteItems, MenuItem } from '../../store/slices/menuSlice';
+import { bulkUpdateAvailability, bulkDeleteItems } from '../../store/slices/menuSlice';
 import SelectableMenuItem from '../../components/menu/SelectableMenuItem';
 import BulkActionsBar from '../../components/menu/BulkActionsBar';
 import { colors, spacing } from '../../theme';
@@ -11,7 +11,7 @@ import { CheckSquare, Square } from 'lucide-react-native';
 
 const BulkMenuOperationsScreen = () => {
     const dispatch = useDispatch();
-    const { items, loading } = useSelector((state: RootState) => state.menu);
+    const { items } = useSelector((state: RootState) => state.menu);
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
     // Flatten items for list

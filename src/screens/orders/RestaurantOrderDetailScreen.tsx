@@ -14,7 +14,7 @@ import { AppDispatch, RootState } from '../../store';
 
 export const RestaurantOrderDetailScreen = () => {
     const route = useRoute<any>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const dispatch = useDispatch<AppDispatch>();
     const { orderId } = route.params || {};
 
@@ -34,7 +34,8 @@ export const RestaurantOrderDetailScreen = () => {
             await dispatch(updateOrderStatus({ orderId, status: 'ACCEPTED' })).unwrap();
             Alert.alert('Success', 'Order Accepted');
             dispatch(fetchOrderDetails(orderId)); // Refresh
-        } catch (e) {
+        } catch (err) {
+            console.error('Accept error:', err);
             Alert.alert('Error', 'Failed to accept order');
         }
     };
@@ -44,7 +45,8 @@ export const RestaurantOrderDetailScreen = () => {
             await dispatch(updateOrderStatus({ orderId, status: 'REJECTED' })).unwrap();
             Alert.alert('Success', 'Order Rejected');
             navigation.goBack();
-        } catch (e) {
+        } catch (err) {
+            console.error('Reject error:', err);
             Alert.alert('Error', 'Failed to reject order');
         }
     };
@@ -54,7 +56,8 @@ export const RestaurantOrderDetailScreen = () => {
             await dispatch(updateOrderStatus({ orderId, status: 'READY' })).unwrap();
             Alert.alert('Success', 'Order Marked as Ready');
             dispatch(fetchOrderDetails(orderId));
-        } catch (e) {
+        } catch (err) {
+            console.error('Update status error:', err);
             Alert.alert('Error', 'Failed to update status');
         }
     };
@@ -76,7 +79,7 @@ export const RestaurantOrderDetailScreen = () => {
         return (
             <View style={styles.center}>
                 <Text style={styles.errorText}>Failed to load order: {error}</Text>
-                <Button onPress={() => dispatch(fetchOrderDetails(orderId))}>Retry</Button>
+                <Button variant="primary" onPress={() => dispatch(fetchOrderDetails(orderId))}>Retry</Button>
             </View>
         );
     }
@@ -123,7 +126,6 @@ export const RestaurantOrderDetailScreen = () => {
                     <View style={styles.section}>
                         <Button
                             variant="primary"
-                            fullWidth
                             onPress={handleMarkReady}
                         >
                             Mark as Ready
@@ -142,7 +144,6 @@ export const RestaurantOrderDetailScreen = () => {
                         <Text style={styles.infoText}>Waiting for delivery partner...</Text>
                         <Button
                             variant="secondary"
-                            fullWidth
                             onPress={handleVerifyPickup}
                         >
                             Refresh Status

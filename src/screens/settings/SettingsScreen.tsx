@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {
-    User, Clock, Truck, Users, Bell, CreditCard, ChevronRight, Store
+    Clock, Truck, Users, Bell, CreditCard, ChevronRight, Store
 } from 'lucide-react-native';
 
 const MENU_ITEMS = [

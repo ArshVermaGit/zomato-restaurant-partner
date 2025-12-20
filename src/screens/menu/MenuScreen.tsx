@@ -9,7 +9,7 @@ import MenuItemCard from '../../components/menu/MenuItemCard';
 import ReorderCategoryList from '../../components/menu/ReorderCategoryList';
 import { Plus, ArrowUpDown, Check, CheckSquare } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { colors, spacing } from '../../theme';
+import { colors } from '@zomato/design-tokens';
 
 const MenuScreen = () => {
     const dispatch = useDispatch();
@@ -21,17 +21,7 @@ const MenuScreen = () => {
     const [isReordering, setIsReordering] = useState(false);
     const [tempCategories, setTempCategories] = useState(categories);
 
-    useEffect(() => {
-        loadMenu();
-    }, []);
-
-    useEffect(() => {
-        if (isReordering) {
-            setTempCategories(categories);
-        }
-    }, [isReordering, categories]);
-
-    const loadMenu = async () => {
+    const loadMenu = React.useCallback(async () => {
         try {
             const data = await RestaurantService.getMenu('REST-001');
             dispatch(setMenuData(data));
@@ -44,7 +34,11 @@ const MenuScreen = () => {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadMenu();
+    }, [loadMenu]);
 
     const toggleExpand = (catId: string) => {
         setExpandedCategories(prev => ({ ...prev, [catId]: !prev[catId] }));
@@ -104,16 +98,16 @@ const MenuScreen = () => {
                     ) : (
                         <>
                             <TouchableOpacity
-                                style={[styles.iconBtn, { marginRight: 8 }]}
+                                style={styles.iconBtn}
                                 onPress={() => navigation.navigate('BulkOperations')}
                             >
-                                <CheckSquare size={20} color={colors.gray_700} />
+                                <CheckSquare size={20} color={colors.secondary.gray_700} />
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.iconBtn, { marginRight: 8 }]}
+                                style={styles.iconBtn}
                                 onPress={() => setIsReordering(true)}
                             >
-                                <ArrowUpDown size={20} color={colors.gray_700} />
+                                <ArrowUpDown size={20} color={colors.secondary.gray_700} />
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.addCatBtn}
@@ -195,6 +189,7 @@ const styles = StyleSheet.create({
     headerActions: {
         flexDirection: 'row',
         alignItems: 'center',
+        gap: 8,
     },
     addCatBtn: {
         flexDirection: 'row',
@@ -207,7 +202,7 @@ const styles = StyleSheet.create({
     doneBtn: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.success,
+        backgroundColor: colors.semantic.success,
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 8,
@@ -215,7 +210,7 @@ const styles = StyleSheet.create({
     iconBtn: {
         padding: 8,
         borderRadius: 8,
-        backgroundColor: colors.gray_100,
+        backgroundColor: colors.secondary.gray_100,
     },
     btnText: {
         color: '#FFF',

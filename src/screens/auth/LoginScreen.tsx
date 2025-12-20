@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { AuthService } from '../../services/api/auth';
 
 const LoginScreen = () => {
-    const navigation = useNavigation();
+    // const navigation = useNavigation();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -20,6 +19,8 @@ const LoginScreen = () => {
             await AuthService.login(phoneNumber);
             // Navigation handled by RootNavigator based on Redux state
         } catch (error) {
+            // Error logged if needed
+            console.error('Login error:', error);
             Alert.alert('Error', 'Login failed. Please try again.');
         } finally {
             setLoading(false);
@@ -53,7 +54,7 @@ const LoginScreen = () => {
                 </View>
 
                 <TouchableOpacity
-                    style={[styles.button, { opacity: loading ? 0.7 : 1 }]}
+                    style={[styles.button, loading && styles.buttonLoading]}
                     onPress={handleLogin}
                     disabled={loading}
                 >
@@ -131,6 +132,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
+    },
+    buttonLoading: {
+        opacity: 0.7,
     },
     buttonText: {
         color: '#FFF',

@@ -64,7 +64,7 @@ const AddEditCategoryScreen = () => {
             </View>
 
             <View style={styles.footer}>
-                <View style={{ width: '100%' }}>
+                <View style={styles.fullWidthButton}>
                     <Button
                         variant="primary"
                         size="large"
@@ -126,6 +126,9 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderTopColor: colors.gray_100,
         backgroundColor: colors.white,
+    },
+    fullWidthButton: {
+        width: '100%'
     }
 });
 

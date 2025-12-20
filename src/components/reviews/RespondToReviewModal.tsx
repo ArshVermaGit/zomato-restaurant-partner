@@ -44,7 +44,7 @@ const RespondToReviewModal: React.FC<Props> = ({ visible, review, onClose, onSub
                     </View>
 
                     <Text style={styles.subtitle}>
-                        Replying to <Text style={{ fontWeight: 'bold' }}>{review.customerName}</Text>'s review
+                        Replying to <Text style={styles.bold}>{review.customerName}</Text>'s review
                     </Text>
 
                     <TextInput
@@ -108,6 +108,9 @@ const styles = StyleSheet.create({
     },
     footer: {
         width: '100%',
+    },
+    bold: {
+        fontWeight: 'bold',
     }
 });
 

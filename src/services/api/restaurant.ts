@@ -44,7 +44,7 @@ export const RestaurantService = {
     },
 
     // Unified analytics getter for dashboard screen
-    getDashboardStats: async (restaurantId: string) => {
+    getDashboardStats: async (_restaurantId: string) => {
         // MOCK: Backend endpoint not ready
         return {
             revenue: 12500,
@@ -61,7 +61,7 @@ export const RestaurantService = {
         };
     },
 
-    getPendingOrders: async (restaurantId: string) => {
+    getPendingOrders: async (_restaurantId: string) => {
         try {
             const orders = await ApiOrderService.listOrders({ status: 'PENDING' });
             return orders.map((o: any) => ({
@@ -138,9 +138,9 @@ export const RestaurantService = {
         }
     },
 
-    getRecentOrders: async (restaurantId: string) => [],
-    updateStatus: async (restaurantId: string, isOpen: boolean) => isOpen,
-    getAllOrders: async (restaurantId: string, status?: string) => {
+    getRecentOrders: async (_restaurantId: string) => [],
+    updateStatus: async (_restaurantId: string, isOpen: boolean) => isOpen,
+    getAllOrders: async (_restaurantId: string, status?: string) => {
         try {
             const filters: any = {};
             if (status && status !== 'ALL') filters.status = status;
@@ -164,7 +164,6 @@ export const RestaurantService = {
     upsertCategory: async (c: any) => c,
 
     upsertItem: async (i: any) => {
-        const restaurantId = 'current-restaurant-id'; // Ideally passed or from state
         // This method signature in the service might need to be updated to accept restaurantId
         // For now, assuming context or partial impl. 
         // Real implementation should be:
@@ -173,13 +172,13 @@ export const RestaurantService = {
         return i;
     },
 
-    deleteItem: async (id: string) => {
+    deleteItem: async (_id: string) => {
         // needs restaurantId
         // return ApiRestaurantService.deleteMenuItem(restaurantId, id);
         return true;
     },
 
-    getAnalytics: async (id: string, range: string = 'WEEK') => {
+    getAnalytics: async (_id: string, _range: string = 'WEEK') => {
         // MOCK: Matching AnalyticsData interface
         return {
             overview: {
@@ -203,13 +202,13 @@ export const RestaurantService = {
         };
     },
 
-    getTopItems: async (id: string) => [
+    getTopItems: async (_id: string) => [
         { id: '1', name: 'Butter Chicken', orders: 150, revenue: 45000, rating: 4.8 },
         { id: '2', name: 'Dal Makhani', orders: 120, revenue: 30000, rating: 4.7 },
         { id: '3', name: 'Naan', orders: 300, revenue: 15000, rating: 4.5 },
     ],
 
-    getReviews: async (id: string) => {
+    getReviews: async (_id: string) => {
         // MOCK
         return {
             reviews: [],
@@ -220,9 +219,9 @@ export const RestaurantService = {
             }
         };
     },
-    respondToReview: async (id: string, response: string) => true,
+    respondToReview: async (_id: string, _response: string) => true,
 
-    getFinancialsOverview: async (id: string) => {
+    getFinancialsOverview: async (_id: string) => {
         // MOCK
         return {
             todayRevenue: 5400,
@@ -235,27 +234,27 @@ export const RestaurantService = {
         };
     },
 
-    getTransactions: async (id: string) => [
+    getTransactions: async (_id: string) => [
         { id: 't1', date: '2025-12-16', amount: 1250, type: 'CREDIT', description: 'Order #1234' },
         { id: 't2', date: '2025-12-15', amount: 4500, type: 'DEBIT', description: 'Payout to Bank' },
     ],
 
-    getPayouts: async (id: string) => [],
+    getPayouts: async (_id: string) => [],
 
-    getBankAccount: async (id: string) => ({
+    getBankAccount: async (_id: string) => ({
         bankName: 'HDFC Bank',
         accountNumber: '**** **** **** 1234',
         ifsc: 'HDFC0001234',
         isVerified: true
     }),
 
-    getNotifications: async (id: string) => {
+    getNotifications: async (_id: string) => {
         return [
             { id: '1', type: 'ORDER_NEW', title: 'New Order Received', message: 'Order #1234 from John Doe', timestamp: new Date().toISOString(), read: false },
         ];
     },
-    updateSettings: async (id: string, updates: any) => true,
-    getStaff: async (id: string) => [],
-    addStaff: async (id: string, staff: any) => ({}),
-    removeStaff: async (id: string) => true,
+    updateSettings: async (_id: string, _updates: any) => true,
+    getStaff: async (_id: string) => [],
+    addStaff: async (_id: string, _staff: any) => ({}),
+    removeStaff: async (_id: string) => true,
 };

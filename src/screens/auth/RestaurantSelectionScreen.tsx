@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Alert, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { RestaurantService } from '../../services/api/restaurant';
@@ -7,7 +7,7 @@ import { selectRestaurant } from '../../store/slices/restaurantSlice';
 
 const RestaurantSelectionScreen = () => {
     const dispatch = useDispatch();
-    const { restaurants, loading } = useSelector((state: RootState) => state.restaurant);
+    const { restaurants } = useSelector((state: RootState) => state.restaurant);
     const user = useSelector((state: RootState) => state.auth.user);
 
     useEffect(() => {
@@ -18,6 +18,7 @@ const RestaurantSelectionScreen = () => {
         try {
             await RestaurantService.getMyRestaurants();
         } catch (error) {
+            console.error('Failed to load restaurants:', error);
             Alert.alert('Error', 'Failed to load restaurants');
         }
     };

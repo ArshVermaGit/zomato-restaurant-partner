@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput } from 'react-native';
-import { X, Clock } from 'lucide-react-native';
+import { X } from 'lucide-react-native';
 import { colors, typography, spacing, borderRadius, shadows } from '../../theme';
 import { Button } from '@zomato/ui';
 
@@ -78,7 +78,7 @@ const PrepTimeModal: React.FC<Props> = ({ visible, onClose, onConfirm }) => {
                     </View>
 
                     <View style={styles.footer}>
-                        <View style={{ width: '100%' }}>
+                        <View style={styles.buttonWrapper}>
                             <Button
                                 variant="primary"
                                 size="large"
@@ -168,6 +168,9 @@ const styles = StyleSheet.create({
     },
     footer: {
         marginTop: spacing.sm,
+    },
+    buttonWrapper: {
+        width: '100%',
     }
 });
 

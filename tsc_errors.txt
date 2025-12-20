@@ -1,0 +1,73 @@
+
+> zomato-restaurant-partner@0.0.1 type-check
+> tsc --noEmit --pretty false --noErrorTruncation
+
+src/components/common/ApiErrorDisplay.tsx(3,44): error TS6133: 'ShieldAlert' is declared but its value is never read.
+src/components/common/ApiErrorDisplay.tsx(23,28): error TS2339: Property 'NETWORK_ERROR' does not exist on type 'typeof ErrorCode'.
+src/components/common/NotificationToast.tsx(2,44): error TS6133: 'TouchableOpacity' is declared but its value is never read.
+src/components/common/RestaurantEmptyStates.tsx(2,1): error TS6133: 'View' is declared but its value is never read.
+src/components/common/RestaurantEmptyStates.tsx(6,1): error TS6133: 'colors' is declared but its value is never read.
+src/components/dashboard/PendingOrders.tsx(3,17): error TS6133: 'Check' is declared but its value is never read.
+src/components/dashboard/QuickActions.tsx(3,34): error TS6133: 'Plus' is declared but its value is never read.
+src/components/financials/RevenueCard.tsx(4,22): error TS6133: 'DollarSign' is declared but its value is never read.
+src/components/financials/RevenueCard.tsx(4,34): error TS6133: 'Calendar' is declared but its value is never read.
+src/components/financials/SettlementCard.tsx(4,17): error TS6133: 'ArrowRight' is declared but its value is never read.
+src/components/financials/TransactionsList.tsx(2,34): error TS6133: 'FlatList' is declared but its value is never read.
+src/components/menu/ModifierGroupBuilder.tsx(2,63): error TS6133: 'FlatList' is declared but its value is never read.
+src/components/menu/ModifierGroupBuilder.tsx(3,34): error TS6133: 'Check' is declared but its value is never read.
+src/components/menu/SelectableMenuItem.tsx(4,17): error TS6133: 'Square' is declared but its value is never read.
+src/components/menu/SelectableMenuItem.tsx(5,39): error TS6133: 'borderRadius' is declared but its value is never read.
+src/components/orders/PrepTimeModal.tsx(3,13): error TS6133: 'Clock' is declared but its value is never read.
+src/components/reviews/RatingSummary.tsx(12,11): error TS6133: 'maxCount' is declared but its value is never read.
+src/components/reviews/ReviewCard.tsx(5,1): error TS6133: 'Star' is declared but its value is never read.
+src/components/settings/SettingsSection.tsx(3,39): error TS6133: 'borderRadius' is declared but its value is never read.
+src/hooks/useApiFeedback.ts(3,20): error TS6133: 'ErrorCode' is declared but its value is never read.
+src/hooks/useNotifications.ts(3,10): error TS6133: 'Platform' is declared but its value is never read.
+src/navigation/MainStack.tsx(6,1): error TS6133: 'DashboardScreen' is declared but its value is never read.
+src/navigation/MainStack.tsx(7,1): error TS6133: 'OrdersStack' is declared but its value is never read.
+src/navigation/MainStack.tsx(8,1): error TS6133: 'MenuStack' is declared but its value is never read.
+src/navigation/MainStack.tsx(12,1): error TS6133: 'AnalyticsScreen' is declared but its value is never read.
+src/screens/analytics/AnalyticsScreen.tsx(8,10): error TS6133: 'Download' is declared but its value is never read.
+src/screens/auth/LoginScreen.tsx(2,121): error TS6133: 'Image' is declared but its value is never read.
+src/screens/auth/LoginScreen.tsx(7,11): error TS6133: 'navigation' is declared but its value is never read.
+src/screens/auth/RestaurantOnboardingScreen.tsx(1,17): error TS6133: 'useRef' is declared but its value is never read.
+src/screens/auth/RestaurantOnboardingScreen.tsx(11,7): error TS6133: 'AnimatedDot' is declared but its value is never read.
+src/screens/auth/RestaurantOnboardingScreen.tsx(11,22): error TS6198: All destructured elements are unused.
+src/screens/auth/RestaurantSelectionScreen.tsx(2,62): error TS6133: 'Image' is declared but its value is never read.
+src/screens/auth/RestaurantSelectionScreen.tsx(10,26): error TS6133: 'loading' is declared but its value is never read.
+src/screens/DashboardScreen.tsx(12,5): error TS6133: 'setRestaurantStatus' is declared but its value is never read.
+src/screens/DashboardScreen.tsx(332,38): error TS6133: 'navigation' is declared but its value is never read.
+src/screens/menu/BulkMenuOperationsScreen.tsx(1,27): error TS6133: 'useEffect' is declared but its value is never read.
+src/screens/menu/BulkMenuOperationsScreen.tsx(6,51): error TS6133: 'MenuItem' is declared but its value is never read.
+src/screens/menu/BulkMenuOperationsScreen.tsx(14,20): error TS6133: 'loading' is declared but its value is never read.
+src/services/api/restaurant.ts(47,31): error TS6133: 'restaurantId' is declared but its value is never read.
+src/services/api/restaurant.ts(64,30): error TS6133: 'restaurantId' is declared but its value is never read.
+src/services/api/restaurant.ts(141,29): error TS6133: 'restaurantId' is declared but its value is never read.
+src/services/api/restaurant.ts(142,26): error TS6133: 'restaurantId' is declared but its value is never read.
+src/services/api/restaurant.ts(143,26): error TS6133: 'restaurantId' is declared but its value is never read.
+src/services/api/restaurant.ts(167,15): error TS6133: 'restaurantId' is declared but its value is never read.
+src/services/api/restaurant.ts(176,24): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(182,26): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(182,38): error TS6133: 'range' is declared but its value is never read.
+src/services/api/restaurant.ts(206,25): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(212,24): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(223,29): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(223,41): error TS6133: 'response' is declared but its value is never read.
+src/services/api/restaurant.ts(225,35): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(238,29): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(243,24): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(245,28): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(252,30): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(257,28): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(257,40): error TS6133: 'updates' is declared but its value is never read.
+src/services/api/restaurant.ts(258,22): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(259,22): error TS6133: 'id' is declared but its value is never read.
+src/services/api/restaurant.ts(259,34): error TS6133: 'staff' is declared but its value is never read.
+src/services/api/restaurant.ts(260,25): error TS6133: 'id' is declared but its value is never read.
+npm error Lifecycle script `type-check` failed with error:
+npm error code 2
+npm error path /Users/arshverma/GitHub/Zomato/zomato-ecosystem/apps/zomato-restaurant-partner
+npm error workspace zomato-restaurant-partner@0.0.1
+npm error location /Users/arshverma/GitHub/Zomato/zomato-ecosystem/apps/zomato-restaurant-partner
+npm error command failed
+npm error command sh -c tsc --noEmit --pretty false --noErrorTruncation

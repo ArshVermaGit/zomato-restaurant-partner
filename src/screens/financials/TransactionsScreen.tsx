@@ -10,11 +10,7 @@ const TransactionsScreen = () => {
     const dispatch = useDispatch();
     const { transactions, loading } = useSelector((state: RootState) => state.financials);
 
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const loadData = async () => {
+    const loadData = React.useCallback(async () => {
         dispatch(setLoading(true));
         try {
             const data = await RestaurantService.getTransactions('REST-001');
@@ -25,7 +21,11 @@ const TransactionsScreen = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    };
+    }, [dispatch]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     return (
         <View style={styles.container}>

@@ -17,7 +17,7 @@ const VegNonVegSelector: React.FC<Props> = ({ isVeg, onChange }) => {
                 ]}
                 onPress={() => onChange(true)}
             >
-                <View style={[styles.dot, { borderColor: colors.success, backgroundColor: isVeg ? colors.success : 'transparent' }]} />
+                <View style={[styles.dot, styles.dotVeg, isVeg && styles.dotVegSelected]} />
                 <Text style={[styles.text, isVeg && styles.selectedText]}>Veg</Text>
             </TouchableOpacity>
 
@@ -28,7 +28,7 @@ const VegNonVegSelector: React.FC<Props> = ({ isVeg, onChange }) => {
                 ]}
                 onPress={() => onChange(false)}
             >
-                <View style={[styles.dot, { borderColor: colors.error, backgroundColor: !isVeg ? colors.error : 'transparent' }]} />
+                <View style={[styles.dot, styles.dotNonVeg, !isVeg && styles.dotNonVegSelected]} />
                 <Text style={[styles.text, !isVeg && styles.selectedText]}>Non-Veg</Text>
             </TouchableOpacity>
         </View>
@@ -80,6 +80,20 @@ const styles = StyleSheet.create({
     selectedText: {
         color: colors.gray_900,
         fontWeight: 'bold',
+    },
+    dotVeg: {
+        borderColor: colors.success,
+        backgroundColor: 'transparent',
+    },
+    dotVegSelected: {
+        backgroundColor: colors.success,
+    },
+    dotNonVeg: {
+        borderColor: colors.error,
+        backgroundColor: 'transparent',
+    },
+    dotNonVegSelected: {
+        backgroundColor: colors.error,
     }
 });
 
