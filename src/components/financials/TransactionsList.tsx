@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors, typography, spacing, borderRadius } from '../../theme';
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react-native';
 
