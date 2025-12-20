@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, typography, spacing, borderRadius } from '../../theme';
-import { Clock, ArrowRight } from 'lucide-react-native';
+import { Clock } from 'lucide-react-native';
 import { Button } from '@zomato/ui';
 
 interface Props {
