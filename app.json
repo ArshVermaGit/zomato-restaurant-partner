@@ -1,6 +1,4 @@
 {
-  "name": "ZomatoRestaurantPartner",
-  "displayName": "Zomato Restaurant Partner",
   "expo": {
     "name": "Zomato Restaurant",
     "slug": "zomato-restaurant-partner",
